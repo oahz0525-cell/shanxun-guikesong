@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4A6B42">
+<title>山熏 · 溯源</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--soot:#2A2418;--sage:#4A6B42;--ember:#C8942E;--alarm:#C94532;
+--sans:"PingFang SC","Microsoft YaHei",sans-serif;--serif:"Noto Serif SC",serif;--script:"Ma Shan Zheng",cursive}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:#000;-webkit-font-smoothing:antialiased}
+.hidden{display:none!important}
+
+#view-login{height:100%;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;padding:24px 20px;background:linear-gradient(165deg,#F5F0E6,#E8E4DC)}
+.login-brand{text-align:center;margin-bottom:28px}
+.login-brand .n{font-family:var(--serif);font-size:28px;letter-spacing:.2em;color:var(--sage);font-weight:700}
+.login-brand .s{font-size:12px;color:#7A7264;margin-top:8px}
+.login-card{background:#fff;border-radius:20px;padding:24px 20px;box-shadow:0 8px 32px rgba(42,36,24,.12);max-width:400px;margin:0 auto;width:100%}
+.login-card h2{font-size:17px;font-weight:600;margin-bottom:6px}
+.login-card .sub{font-size:13px;color:#5C5548;line-height:1.6;margin-bottom:20px}
+.login-card label{display:block;font-size:12px;color:#5C5548;margin-bottom:5px}
+.login-card input,.login-card select{width:100%;padding:12px 14px;border:1px solid rgba(42,36,24,.1);border-radius:12px;font-size:15px;margin-bottom:14px;font-family:inherit}
+.login-card .err{color:var(--alarm);font-size:12px;margin:-8px 0 12px}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;background:var(--sage);color:#fff}
+.wx-hint{font-size:12px;color:#5C5548;text-align:center;margin-top:14px;line-height:1.7;padding:10px 12px;background:rgba(74,107,66,.06);border-radius:10px}
+
+#view-story{height:100%;display:flex;flex-direction:column}
+.story-header{flex:none;z-index:50;background:rgba(42,36,24,.88);backdrop-filter:blur(10px);
+  padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;color:#fff}
+.story-header .brand{font-family:var(--serif);font-size:14px;letter-spacing:.15em}
+.story-header .bid{font-family:ui-monospace,monospace;font-size:10px;opacity:.55}
+.story-header .user{font-size:10px;opacity:.75;text-align:right}
+.story-header .logout{font-size:10px;color:var(--ember);cursor:pointer;margin-top:2px}
+
+.story-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch}
+.snap-page{scroll-snap-align:start;scroll-snap-stop:always;min-height:100dvh;position:relative;overflow:hidden}
+
+/* ===== 全屏环节页（参考排版） ===== */
+.stage-page{min-height:100dvh;position:relative;color:#fff}
+.stage-bg{position:absolute;inset:-8% 0 0 0;background:center/cover no-repeat;transform:scale(1.12);transition:transform 1.2s cubic-bezier(.22,1,.36,1)}
+.stage-page.in-view .stage-bg{transform:scale(1)}
+.stage-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,.02) 40%,rgba(0,0,0,.32) 100%)}
+.stage-page[data-bright] .stage-shade{background:linear-gradient(180deg,rgba(255,245,235,.1) 0%,rgba(0,0,0,.01) 42%,rgba(0,0,0,.22) 100%)}
+
+/* 右上：职务 + 签名 */
+.stage-sig{position:absolute;top:max(18px,env(safe-area-inset-top));right:18px;z-index:10;text-align:right;
+  opacity:0;transform:translateX(56px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.stage-page.in-view .stage-sig{opacity:1;transform:translateX(0);transition-delay:.25s}
+.stage-sig .role{font-size:13px;letter-spacing:.12em;opacity:.92;margin-bottom:2px;font-weight:500}
+.stage-sig .signature{font-family:var(--script);font-size:clamp(36px,10vw,52px);line-height:1.1;
+  text-shadow:0 2px 12px rgba(0,0,0,.35);transform:rotate(-2deg);display:inline-block}
+
+/* 左下：步骤 + 标题 + 描述 */
+.stage-copy{position:absolute;left:18px;right:38%;bottom:max(24px,env(safe-area-inset-bottom));z-index:10;
+  opacity:0;transform:translateX(-56px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+.stage-page.in-view .stage-copy{opacity:1;transform:translateX(0);transition-delay:.1s}
+.stage-copy .step{font-size:11px;letter-spacing:.28em;opacity:.8;margin-bottom:8px;font-weight:500}
+.stage-copy .title{font-family:var(--serif);font-size:clamp(42px,12vw,64px);font-weight:700;line-height:1.05;
+  text-shadow:0 4px 24px rgba(0,0,0,.45);margin-bottom:10px}
+.stage-copy .desc{font-size:13px;line-height:1.75;opacity:.88;max-width:280px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.stage-copy .badge{display:inline-block;margin-top:12px;font-size:10px;padding:4px 12px;border-radius:20px;
+  background:rgba(255,255,255,.18);backdrop-filter:blur(4px);letter-spacing:.05em}
+.stage-copy .badge.wait{opacity:.6}
+
+/* 右下：人物剪影立牌 */
+.stage-portrait{position:absolute;right:-4%;bottom:0;z-index:8;width:min(78vw,340px);height:min(72vh,520px);
+  display:flex;align-items:flex-end;justify-content:center;pointer-events:none;
+  opacity:0;transform:translateY(100px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.stage-page.in-view .stage-portrait{opacity:1;transform:translateY(0);transition-delay:.4s}
+.portrait-cutout{width:100%;height:100%;object-fit:contain;object-position:bottom center}
+
+.scroll-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:10px;opacity:.45;
+  animation:bob 2s ease-in-out infinite;z-index:12;letter-spacing:.1em}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* 首屏封面 */
+.story-hero{position:relative;min-height:100dvh;cursor:pointer;overflow:hidden;color:#2A2418}
+.hero-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center}
+.hero-footer{position:absolute;left:0;right:0;bottom:12vh;z-index:10;text-align:center;padding:28px 20px 12px;
+  background:linear-gradient(180deg,rgba(232,228,220,0) 0%,rgba(232,228,220,.72) 38%,rgba(232,228,220,.94) 100%);
+  opacity:0;transform:translateY(16px);transition:opacity .9s .2s,transform .9s .2s cubic-bezier(.22,1,.36,1)}
+.story-hero.in-view .hero-footer{opacity:1;transform:translateY(0)}
+.hero-cta{font-size:14px;color:#4A4438;letter-spacing:.04em;line-height:1.7;margin-bottom:10px}
+.hero-cta .em{font-family:var(--serif);font-weight:700;color:#2A2418}
+.hero-batch .label{display:block;font-size:10px;color:#7A7264;letter-spacing:.12em;margin-bottom:4px}
+.hero-batch .code{font-family:ui-monospace,monospace;font-size:14px;color:#2A2418;font-weight:600;letter-spacing:.08em}
+.story-hero .scroll-hint{bottom:max(8px,env(safe-area-inset-bottom));color:#9A9284;z-index:11}
+
+/* 送达页 */
+.delivery-page .delivery-route{position:absolute;inset:0;z-index:5;opacity:.85}
+.delivery-page .delivery-route svg{width:100%;height:55%;position:absolute;bottom:28%;left:0}
+.delivery-van-body{fill:#F4C430;stroke:#1a1a1a;stroke-width:1.2}
+.delivery-van-window{fill:#87CEEB}
+.delivery-van-wheel{fill:#1a1a1a}
+.delivery-road{fill:none;stroke:rgba(255,255,255,.4);stroke-width:5;stroke-linecap:round;stroke-dasharray:10 8}
+
+.internal-panel{position:absolute;left:18px;right:18px;bottom:max(100px,12vh);z-index:11;max-height:28vh;overflow-y:auto;
+  opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.stage-page.in-view .internal-panel{opacity:1;transform:translateY(0);transition-delay:.55s}
+.internal-panel .card{background:rgba(255,255,255,.92);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:12px;color:#2A2418}
+.internal-panel .card b{display:block;margin-bottom:4px;font-size:12px}
+.internal-panel .card p{color:#5C5548;line-height:1.5}
+.internal-panel .meta{font-size:10px;color:#7A7264;margin-top:4px}
+
+.story-slogan{min-height:100dvh;display:flex;align-items:center;justify-content:center;text-align:center;padding:48px 24px;
+  background:linear-gradient(165deg,#2A2418,#4A6B42);color:#fff}
+.slogan-inner{opacity:0;transform:translateY(48px);transition:opacity 1s,transform 1s cubic-bezier(.22,1,.36,1)}
+.story-slogan.in-view .slogan-inner{opacity:1;transform:translateY(0)}
+.slogan-inner .brand-mark{font-family:var(--serif);font-size:clamp(36px,9vw,52px);font-weight:700;letter-spacing:.25em;margin-bottom:14px}
+.slogan-inner .tagline{font-size:clamp(16px,4vw,20px);letter-spacing:.1em}
+.slogan-inner .sub{font-size:12px;opacity:.5;margin-top:18px;line-height:1.8}
+
+.story-footer{text-align:center;padding:16px;background:#1a1610;color:rgba(255,255,255,.35);font-size:10px}
+#view-loading{height:100%;display:flex;align-items:center;justify-content:center;background:#F5F0E6;color:#5C5548}
+</style>
+</head><body>
+
+<div id="view-loading"><p>正在加载溯源信息…</p></div>
+
+<div id="view-login" class="hidden">
+  <div class="login-brand"><div class="n">山熏</div><div class="s">清镇 · 可追溯腊肉</div></div>
+  <div class="login-card">
+    <h2 id="login-batch-title">—</h2>
+    <p class="sub" id="login-batch-sub">登录后查看本产品从原料到餐桌的完整旅程</p>
+    <label>账号</label>
+    <select id="login-user">
+      <option value="微信用户">微信用户（消费者演示）</option>
+      <option value="石红英">石红英 · 厂内负责人</option>
+      <option value="李师傅">李师傅 · 厂内维护</option>
+    </select>
+    <label>密码</label>
+    <input type="password" id="login-pass" placeholder="请输入密码">
+    <div class="err" id="login-err"></div>
+    <button class="btn" onclick="doLogin()">登录查看溯源</button>
+    <p class="wx-hint">输入 demo（查看消费者视角）<br>输入 1234（查看内部视角）</p>
+  </div>
+</div>
+
+<div id="view-story" class="hidden">
+  <header class="story-header">
+    <div><div class="brand">山熏</div><div class="bid" id="hdr-batch">—</div></div>
+    <div><div class="user" id="hdr-user">—</div><div class="logout" onclick="logout()">退出</div></div>
+  </header>
+  <div class="story-scroll" id="story-scroll">
+    <section class="story-hero snap-page" id="story-hero" onclick="scrollToFirstStage()">
+      <img class="hero-cover" src="assets/trace/hero-product.png" alt="山熏腊肉">
+      <div class="hero-footer">
+        <p class="hero-cta">向下滑动，查看你的<span class="em">"腊肉"</span>的一生</p>
+        <div class="hero-batch">
+          <span class="label">货号编码</span>
+          <span class="code" id="hero-batch-id">—</span>
+        </div>
+      </div>
+      <div class="scroll-hint">↓</div>
+    </section>
+    <div id="story-sections"></div>
+    <section class="story-slogan snap-page" id="story-slogan">
+      <div class="slogan-inner">
+        <div class="brand-mark">山熏</div>
+        <p class="tagline">让消费者吃得放心</p>
+        <p class="sub">贵州演示产区 · 每一块腊肉，都有老师傅亲手守护</p>
+      </div>
+    </section>
+    <footer class="story-footer">山熏 · 贵州演示产区</footer>
+  </div>
+</div>
+
+<script src="api/trace.js"></script>
+<script>
+const USERS={'石红英':{pass:'1234',role:'负责人',internal:1},'李师傅':{pass:'1234',role:'维护',internal:1},'微信用户':{pass:'demo',role:'消费者',internal:0}};
+let traceData=null,auth=null,deliveryStarted=false;
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+function hideAll(){['view-loading','view-login','view-story'].forEach(id=>$('#'+id).classList.add('hidden'))}
+function show(id){hideAll();$('#'+id).classList.remove('hidden')}
+
+async function loadTrace(){
+  const p=new URLSearchParams(location.search);
+  await TraceAPI.loadDemoRecords();
+  TraceAPI.seedDemo();
+  traceData=TraceAPI.getRecord(p.get('t'))||(p.get('b')?TraceAPI.getRecordByBatch(p.get('b')):null);
+  if(!traceData){$('#view-loading').innerHTML='<p style="padding:20px">未找到溯源信息，请确认二维码是否有效。</p>';return;}
+  $('#login-batch-title').textContent=traceData.batchId+' · '+(traceData.product||'柴火腊肉');
+  $('#login-batch-sub').textContent=(traceData.sup||'贵州')+' · 扫码登录查看溯源故事';
+  try{
+    const s=JSON.parse(sessionStorage.getItem('sx_trace_auth')||'null');
+    if(s&&s.token===traceData.token){auth=s;renderStory();show('view-story');return;}
+  }catch{}
+  show('view-login');
+}
+function doLogin(){
+  const n=$('#login-user').value,p=$('#login-pass').value.trim(),u=USERS[n];
+  if(!u||u.pass!==p){$('#login-err').textContent='账号或密码不对';return;}
+  auth={name:n,role:u.role,internal:u.internal,token:traceData.token};
+  sessionStorage.setItem('sx_trace_auth',JSON.stringify(auth));
+  renderStory();show('view-story');
+}
+function logout(){auth=null;sessionStorage.removeItem('sx_trace_auth');show('view-login');}
+
+function eventForStage(t){
+  const m={'原料':'采购','腌制':'腌制','晾挂':'晾挂','熏制':'熏','检验':'检验','封箱':'入库','到你':'出库'};
+  const k=Object.keys(m).find(x=>t.includes(x));
+  return (traceData.events||[]).find(e=>k&&e.title.includes(m[k]))||null;
+}
+
+function stagePageHtml(s,i,img,c,isInt,intHtml){
+  const step=`STEP ${String(i+1).padStart(2,'0')}`;
+  const bright=s.t.includes('腌制')||s.t.includes('晾挂')||s.t.includes('熏制')||s.t.includes('检验');
+  return `<section class="stage-page snap-page" data-i="${i}"${bright?' data-bright="1"':''}>
+    <div class="stage-bg lazy-bg" data-bg="${img}"></div>
+    <div class="stage-shade"></div>
+    <div class="stage-sig">
+      <div class="role">${c.roleShort||'老师傅'}</div>
+      <div class="signature">${c.name}</div>
+    </div>
+    <div class="stage-copy">
+      <div class="step">${step}</div>
+      <h2 class="title">${s.t}</h2>
+      <p class="desc">${s.d}</p>
+      <span class="badge${s.ok?'':' wait'}">${s.ok?'已验证':'待完成'}</span>
+    </div>
+    <div class="stage-portrait">
+      <img class="portrait-cutout lazy-img" data-src="${c.photo}" alt="${c.name}">
+    </div>
+    ${intHtml?`<div class="internal-panel">${intHtml}</div>`:''}
+    <div class="scroll-hint">↓</div>
+  </section>`;
+}
+
+function deliveryPageHtml(s,i,img,c,t,isInt,intHtml){
+  const status=t.shippedAt?`已于 ${t.shippedAt} 送达 · ${t.channel||'—'}`:'配送途中，即将送达您手中';
+  return `<section class="stage-page delivery-page snap-page" data-i="${i}" data-delivery="1">
+    <div class="stage-bg lazy-bg" data-bg="${img}"></div>
+    <div class="stage-shade"></div>
+    <div class="delivery-route">
+      <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+        <path id="delivery-path" class="delivery-road" d="M 20 150 C 90 90, 160 120, 220 100 S 340 80, 380 95"/>
+        <circle cx="380" cy="95" r="8" fill="#fff" opacity=".9"/>
+        <text x="380" y="82" text-anchor="middle" fill="#fff" font-size="10">您</text>
+        <g id="delivery-van" opacity="0">
+          <rect class="delivery-van-body" x="0" y="0" width="42" height="20" rx="3"/>
+          <rect class="delivery-van-window" x="18" y="3" width="10" height="8" rx="1"/>
+          <rect class="delivery-van-window" x="30" y="3" width="8" height="8" rx="1"/>
+          <circle class="delivery-van-wheel" cx="11" cy="20" r="4.5"/>
+          <circle class="delivery-van-wheel" cx="31" cy="20" r="4.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="stage-sig">
+      <div class="role">${c.roleShort||'出库员'}</div>
+      <div class="signature">${c.name}</div>
+    </div>
+    <div class="stage-copy">
+      <div class="step">STEP ${String(i+1).padStart(2,'0')}</div>
+      <h2 class="title">${s.t}</h2>
+      <p class="desc">${status}</p>
+      <span class="badge">${s.ok?'已送达':'配送中'}</span>
+    </div>
+    <div class="stage-portrait">
+      <img class="portrait-cutout lazy-img" data-src="${c.photo}" alt="${c.name}">
+    </div>
+    ${intHtml?`<div class="internal-panel">${intHtml}</div>`:''}
+    <div class="scroll-hint">↓</div>
+  </section>`;
+}
+
+function loadPageAssets(el){
+  el.querySelectorAll('.lazy-bg[data-bg]').forEach(b=>{
+    if(b.style.backgroundImage) return;
+    b.style.backgroundImage=`url('${b.dataset.bg}')`;
+  });
+  el.querySelectorAll('.lazy-img[data-src]').forEach(img=>{
+    img.src=img.dataset.src;
+    img.removeAttribute('data-src');
+  });
+}
+
+function scrollToFirstStage(){
+  const first=$('#story-sections .snap-page');
+  if(first) first.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function startDeliveryAnim(root){
+  if(deliveryStarted) return;
+  const path=root.querySelector('#delivery-path'),van=root.querySelector('#delivery-van');
+  if(!path||!van) return;
+  deliveryStarted=true;
+  van.setAttribute('opacity','1');
+  const len=path.getTotalLength();
+  let t=0;
+  (function tick(){
+    t=Math.min(1,t+0.007);
+    const pt=path.getPointAtLength(t*len),pt2=path.getPointAtLength(Math.min(len,t*len+2));
+    const ang=Math.atan2(pt2.y-pt.y,pt2.x-pt.x)*180/Math.PI;
+    van.setAttribute('transform',`translate(${pt.x-21},${pt.y-14}) rotate(${ang})`);
+    if(t<1) requestAnimationFrame(tick);
+  })();
+}
+
+function initScrollAnim(){
+  const sc=$('#story-scroll');
+  const pages=[...$$('.snap-page')];
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      const el=e.target;
+      if(e.isIntersecting){
+        el.classList.add('in-view');
+        loadPageAssets(el);
+        if(el.dataset.delivery==='1') startDeliveryAnim(el);
+      } else {
+        el.classList.remove('in-view');
+      }
+    });
+  },{root:sc,threshold:0.52});
+  pages.forEach(p=>io.observe(p));
+  if(pages[0]){pages[0].classList.add('in-view');loadPageAssets(pages[0]);}
+}
+
+function renderStory(){
+  deliveryStarted=false;
+  const t=traceData,int=t.internal||{},isInt=auth?.internal;
+  $('#hdr-batch').textContent=t.batchId;
+  $('#hdr-user').textContent=auth.name+(isInt?' · 厂内':'');
+  $('#hero-batch-id').textContent=t.batchId;
+
+  $('#story-sections').innerHTML=(t.publicStages||[]).map((s,i)=>{
+    const img=TraceAPI.stageImageFor(s.t);
+    const c=TraceAPI.craftsmanForStage(s.t);
+    if(!c) return '';
+    const ev=eventForStage(s.t);
+    const intHtml=isInt?[
+      ev?`<div class="card"><b>${ev.time} · ${ev.title}</b><p>${ev.detail}</p><div class="meta">${ev.registrar||'—'}</div></div>`:'',
+      i===0?`<div class="card"><b>采购信息</b><p>单价 ${int.pr||'—'} · ${int.buyer||'—'}</p></div>`:'',
+      s.t.includes('封箱')?`<div class="card"><b>入库</b><p>${t.outKg||t.inKg} 斤 · ${t.stockedAt||'—'}</p></div>`:'',
+    ].join(''):'';
+    if(s.t.includes('到你')) return deliveryPageHtml(s,i,img,c,t,isInt,intHtml);
+    return stagePageHtml(s,i,img,c,isInt,intHtml);
+  }).join('');
+
+  setTimeout(initScrollAnim,60);
+}
+
+$('#login-pass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+loadTrace();
+</script></body></html>

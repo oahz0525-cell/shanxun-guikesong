@@ -1,0 +1,19 @@
+{
+  "SXQZTEST01": {
+    "batchId": "QZ-TEST-01",
+    "token": "SXQZTEST01",
+    "product": "测试腊肉",
+    "sup": "—",
+    "inKg": 0,
+    "outKg": null,
+    "stockedAt": "8/29",
+    "stockRoom": "成品冷藏①",
+    "shippedAt": null,
+    "channel": null,
+    "publicStages": [],
+    "events": [],
+    "internal": {},
+    "createdAt": "2026-08-29T13:20:14.273Z"
+  },
+  "_batch_QZ-TEST-01": "SXQZTEST01"
+}

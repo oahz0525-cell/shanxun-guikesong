@@ -1,0 +1,3210 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>山熏</title>
+<style>
+:root{--soot:#2A2418;--s1:#FFFCF7;--s2:#F5F0E6;--s3:#EBE5D9;--edge:#D8D0C2;--edge2:#C4BAA8;
+--paper:#F7F4EE;--dim:#5C5548;--faint:#7A7264;
+--ember:#C8942E;--brine:#4F8A82;--alarm:#C94532;--moss:#6B8F42;
+--sage:#4A6B42;--sage-bg:#E6EBE1;--sage-pill:rgba(74,107,66,.12);--pending:#D4872C;
+--serif:"Noto Serif SC","Songti SC",serif;--sans:"PingFang SC","Microsoft YaHei",sans-serif;
+--mono:ui-monospace,"SF Mono",Menlo,monospace;
+--text:var(--soot);--text-dim:var(--dim);--text-faint:var(--faint);
+--bg-card:var(--s1);--border:var(--edge);--border-light:var(--edge2);
+--radius:4px;--radius-sm:3px;--transition-fast:.15s ease;
+--shadow-sm:0 1px 3px rgba(42,36,24,.06);--shadow-md:0 2px 8px rgba(42,36,24,.08);--shadow-lg:0 4px 20px rgba(42,36,24,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.55;
+  display:flex;min-height:100vh;overflow-x:hidden}
+button,input,select{font-family:inherit;font-size:inherit}
+
+/* ---- sidebar ---- */
+aside{width:220px;flex:none;background:var(--sage-bg);border-right:1px solid rgba(74,107,66,.12);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:22px 20px 18px;border-bottom:1px solid rgba(74,107,66,.1)}
+.brand .n{font-family:var(--serif);font-size:22px;letter-spacing:.14em;color:var(--soot);font-weight:600}
+.brand .n b{color:var(--sage);font-weight:700}
+.brand .s{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.12em;margin-top:4px}
+nav{padding:14px 12px;flex:1}
+nav button{display:flex;align-items:center;gap:11px;width:100%;padding:10px 14px;background:none;border:0;
+  color:var(--dim);cursor:pointer;text-align:left;border-radius:10px;margin-bottom:4px;font-size:14px;transition:.12s}
+nav button:hover{background:rgba(255,255,255,.55);color:var(--text)}
+nav button.on{background:#fff;color:var(--sage);font-weight:600;box-shadow:0 1px 4px rgba(42,36,24,.06)}
+nav button .nav-ico{width:18px;height:18px;flex:none;opacity:.7;display:flex;align-items:center;justify-content:center}
+nav button.on .nav-ico{opacity:1}
+nav .cnt{margin-left:auto;font-family:var(--mono);font-size:10.5px;background:var(--sage);color:#fff;
+  padding:2px 7px;border-radius:10px;min-width:20px;text-align:center;font-weight:600}
+nav .cnt.alarm{background:var(--alarm)}
+nav .cnt.zero{display:none}
+.acct{padding:14px 16px;border-top:1px solid rgba(74,107,66,.1);font-size:12px;color:var(--faint);line-height:1.5;
+  display:flex;align-items:center;gap:10px}
+.acct .avatar{width:36px;height:36px;border-radius:50%;background:var(--sage);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex:none}
+.acct .acct-info{flex:1;min-width:0}
+.acct b{display:block;color:var(--soot);font-weight:600;font-size:13px}
+
+/* ---- main ---- */
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid var(--edge);
+  background:var(--paper);position:sticky;top:0;z-index:20}
+.bar h1{font-size:20px;font-weight:600;color:var(--soot)}
+.bar .crumb{color:var(--faint);font-size:13px}
+.bar .sp{flex:1}
+.body{padding:8px 28px 80px;max-width:1200px}
+
+.btn,.btn-primary{padding:8px 16px;border:0;border-radius:var(--radius-sm);background:var(--ember);color:#1A150C;font-weight:600;cursor:pointer}
+.btn:hover,.btn-primary:hover{background:#D9A035}
+.btn.g,.btn-ghost{background:transparent;color:var(--dim);border:1px solid var(--edge2);font-weight:400}
+.btn.g:hover,.btn-ghost:hover{background:var(--s2);color:var(--text);border-color:var(--ember)}
+.btn.sm,.btn-sm{padding:5px 12px;font-size:12.5px}
+.btn:disabled{opacity:.4;cursor:default}
+.sp{flex:1}
+
+.card{background:#fff;border:none;border-radius:14px;box-shadow:0 2px 12px rgba(42,36,24,.08)}
+.card>h3,.card-header h3{font-size:14px;font-weight:500;padding:13px 17px;border-bottom:1px solid rgba(42,36,24,.06);
+  display:flex;align-items:center;gap:9px}
+.card>h3 .r,.card-header .meta{margin-left:auto;font-size:12.5px;color:var(--text-faint);font-weight:400}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:13px 17px;border-bottom:1px solid rgba(42,36,24,.06)}
+.card-header h3{padding:0;border:0}
+.card-body{padding:16px 17px}
+.pad,.card-body{padding:16px 17px}
+
+/* ---- today ---- */
+.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.todo{padding:0}
+.todo-item,.ti{display:flex;gap:13px;padding:13px 17px;border-bottom:1px solid var(--border);align-items:flex-start}
+.todo-item:last-child,.ti:last-child{border:0}
+.todo-item .dot,.ti .ic{width:7px;height:7px;border-radius:50%;margin-top:7px;flex:none;background:var(--faint)}
+.todo-item.alarm .dot,.ti.a .ic{background:var(--alarm)}
+.todo-item.warn .dot,.ti.w .ic{background:var(--ember)}
+.todo-item.ok .dot,.ti.k .ic{background:var(--moss)}
+.todo-item .body,.ti .tx{flex:1;min-width:0}
+.todo-item .title,.ti .tx b{font-weight:500;display:block;font-size:14px}
+.todo-item .desc,.ti .tx span{color:var(--text-dim);font-size:12.5px}
+.todo-item .action,.ti .act{flex:none}
+.todo-empty,.empty{padding:30px 17px;text-align:center;color:var(--text-faint);font-size:13px}
+
+.now{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--edge)}
+.now div{background:var(--s1);padding:14px 17px}
+.now .k{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.07em}
+.now .v{font-family:var(--mono);font-size:26px;margin-top:2px}
+.now .v small{font-size:12px;color:var(--dim)}
+.now .v.hot{color:var(--alarm)}
+.spark{padding:0 17px 14px;background:var(--s1)}
+.whoop-head{display:flex;align-items:baseline;justify-content:space-between;padding:10px 17px 0;font-size:11px;color:var(--faint)}
+.whoop-head b{color:var(--ember);font-weight:500;font-size:12px}
+.factory-wrap{display:grid;gap:clamp(12px,1.8vw,18px);width:100%;max-width:100%;min-width:0}
+.factory-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;width:100%}
+.factory-subtitle{font-size:clamp(12.5px,1.3vw,13.5px);color:var(--faint);line-height:1.5}
+.factory-subtitle a{color:var(--ember);text-decoration:none;margin-left:6px;white-space:nowrap}
+.factory-subtitle a:hover{text-decoration:underline}
+.factory-header-right{display:flex;align-items:center;gap:clamp(10px,1.5vw,16px);flex-wrap:wrap;font-size:clamp(12px,1.2vw,13px)}
+.factory-status{display:flex;align-items:center;gap:6px;color:var(--moss);font-weight:500;white-space:nowrap}
+.factory-status .dot{width:8px;height:8px;border-radius:50%;background:var(--moss);box-shadow:0 0 0 3px rgba(107,143,66,.2)}
+.factory-datetime{font-family:var(--mono);color:var(--faint);font-size:clamp(11.5px,1.1vw,12.5px);white-space:nowrap}
+.factory-bldg-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.factory-bldg-tabs button{padding:7px 16px;border:1px solid var(--edge2);border-radius:20px;background:var(--s2);
+  color:var(--dim);font-size:clamp(12px,1.2vw,13px);cursor:pointer;transition:.12s}
+.factory-bldg-tabs button.on{background:var(--sage);border-color:var(--sage);color:#fff;font-weight:600}
+.factory-bldg-tabs button.muted{opacity:.45}
+.factory-bldg-tabs button:not(.on):not(.muted):hover{border-color:var(--sage);color:var(--sage)}
+.factory-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,clamp(260px,32vw,340px));gap:clamp(12px,1.8vw,16px);align-items:stretch;width:100%;min-width:0}
+.factory-canvas-col{min-width:0;display:flex;flex-direction:column}
+.factory-canvas-wrap{position:relative;border-radius:14px;overflow:hidden;background:#F0EDE6;border:1px solid var(--edge);box-shadow:var(--shadow-sm)}
+#factory-canvas{width:100%;aspect-ratio:3/2;min-height:0;background:#F0EDE6;cursor:default;position:relative;display:block;overflow:hidden}
+.factory-iso-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+#factory-zones{position:absolute;inset:0;z-index:2;pointer-events:none}
+.fz-label{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(42,36,24,.08);border-radius:999px;padding:7px 14px 7px 10px;
+  box-shadow:0 4px 14px rgba(42,36,24,.14);cursor:pointer;white-space:nowrap;
+  transition:transform .15s,box-shadow .15s;font-family:inherit;pointer-events:auto;z-index:3;
+  appearance:none;-webkit-appearance:none}
+.fz-label:hover{transform:translate(-50%,-50%) translateY(-2px);box-shadow:0 8px 22px rgba(42,36,24,.2)}
+.fz-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.fz-dot.run{background:var(--moss)}
+.fz-dot.stby{background:#6B9FD4}
+.fz-dot.alarm{background:var(--alarm);animation:fzPulse 1.6s infinite}
+.fz-txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.3;text-align:left}
+.fz-txt b{font-size:12.5px;color:var(--soot);font-weight:600}
+.fz-txt span{font-size:11px;color:var(--faint)}
+.fz-label.alarm{border-color:rgba(201,69,50,.4)}
+.fz-label.alarm .fz-txt span{color:var(--alarm);font-weight:500}
+.fz-badge{font-style:normal;width:16px;height:16px;border-radius:50%;background:var(--alarm);color:#fff;
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+@keyframes fzPulse{0%,100%{box-shadow:0 0 0 0 rgba(201,69,50,.4)}50%{box-shadow:0 0 0 7px rgba(201,69,50,0)}}
+#factory-canvas canvas{display:block;width:100%!important;height:100%!important}
+.factory-canvas-compass{position:absolute;top:12px;left:12px;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,252,247,.92);border:1px solid rgba(42,36,24,.08);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;color:var(--dim);pointer-events:none;z-index:2;box-shadow:var(--shadow-sm)}
+.factory-canvas-legend{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:5px;
+  background:rgba(255,252,247,.92);border:1px solid rgba(42,36,24,.08);border-radius:10px;padding:8px 12px;
+  font-size:11px;color:var(--dim);pointer-events:none;z-index:2;box-shadow:var(--shadow-sm)}
+.factory-canvas-legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.factory-canvas-legend i{width:8px;height:8px;border-radius:50%;flex:none}
+.factory-canvas-legend i.run{background:var(--moss)}
+.factory-canvas-legend i.stby{background:#6B9FD4}
+.factory-canvas-legend i.alarm{background:var(--alarm)}
+.factory-canvas-legend i.idle{background:#B8B0A4}
+.factory-weather{position:absolute;bottom:12px;left:12px;background:rgba(255,252,247,.94);border:1px solid rgba(42,36,24,.08);
+  border-radius:10px;padding:8px 14px;font-size:12px;color:var(--dim);pointer-events:none;z-index:2;box-shadow:var(--shadow-sm);line-height:1.5}
+.factory-weather b{color:var(--soot);font-weight:500}
+.factory-tip{position:fixed;pointer-events:none;background:var(--s1);color:var(--text);padding:10px 14px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .12s;z-index:90;white-space:nowrap;border:1px solid var(--edge2);box-shadow:var(--shadow-lg)}
+@media(max-width:960px){
+  .factory-layout{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .factory-header{flex-direction:column;align-items:flex-start}
+  .dev-list{max-height:min(34vh,320px)}
+  .fz-label{padding:5px 10px 5px 8px;gap:6px}
+  .fz-txt b{font-size:11px}
+  .fz-txt span{display:none}
+}
+.device-panel{background:#fff;border:none;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(42,36,24,.08);
+  min-width:0;display:flex;flex-direction:column;max-height:min(54vh,480px)}
+@media(max-width:960px){.device-panel{max-height:none}}
+.dev-panel-tabs{display:flex;border-bottom:1px solid var(--edge);flex:none}
+.dev-panel-tabs button{flex:1;padding:11px 8px;background:none;border:0;border-bottom:2px solid transparent;
+  color:var(--faint);font-size:13px;cursor:pointer;transition:.12s}
+.dev-panel-tabs button.on{color:var(--sage);border-bottom-color:var(--sage);font-weight:600}
+.dev-filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--edge);flex:none}
+.dev-chip{padding:5px 11px;border:1px solid var(--edge2);border-radius:16px;background:var(--s2);color:var(--dim);font-size:12px;cursor:pointer;transition:.12s;white-space:nowrap}
+.dev-chip:hover{border-color:var(--sage);color:var(--text)}
+.dev-chip.on{background:var(--sage-pill);border-color:var(--sage);color:var(--sage);font-weight:500}
+.dev-list{flex:1;min-height:120px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px;display:flex;flex-direction:column;gap:8px}
+.dev-card{background:#fff;border:1px solid rgba(42,36,24,.08);border-radius:12px;padding:12px 14px;cursor:pointer;
+  transition:background .12s,box-shadow .12s,border-color .12s;box-shadow:0 1px 3px rgba(42,36,24,.04)}
+.dev-card:hover{background:var(--s2);box-shadow:var(--shadow-sm)}
+.dev-card.sel{border-color:var(--sage);background:rgba(74,107,66,.06);box-shadow:0 0 0 1px rgba(74,107,66,.15)}
+.dev-card-top{display:flex;align-items:flex-start;gap:10px}
+.dev-card .ico{font-size:22px;flex:none;line-height:1}
+.dev-card-main{flex:1;min-width:0}
+.dev-card-name{font-size:14px;font-weight:600;color:var(--soot);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dev-card-name .badge{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600}
+.dev-card-name .badge.run{background:rgba(107,143,66,.14);color:var(--moss)}
+.dev-card-name .badge.alarm{background:rgba(201,69,50,.12);color:var(--alarm)}
+.dev-card-name .badge.off{background:rgba(122,114,100,.12);color:var(--faint)}
+.dev-card-status{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--dim);margin-top:3px}
+.dev-card-status .sd{width:6px;height:6px;border-radius:50%;flex:none}
+.dev-card-status .sd.run{background:var(--moss)}.dev-card-status .sd.stby{background:#6B9FD4}
+.dev-card-status .sd.alarm{background:var(--alarm)}.dev-card-status .sd.off{background:var(--faint)}
+.dev-card-status.alarm-txt{color:var(--alarm)}
+.dev-card-metrics{display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--text-dim)}
+.dev-card-metrics span{display:flex;align-items:center;gap:4px}
+.dev-card-chev{color:var(--faint);font-size:16px;flex:none;align-self:center;margin-left:auto}
+.dev-empty{padding:24px 14px;text-align:center;color:var(--faint);font-size:12.5px}
+.dev-panel-placeholder{padding:32px 16px;text-align:center;color:var(--faint);font-size:13px;line-height:1.6;flex:1}
+.dev-panel-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--edge);flex:none}
+.dev-panel-head h4{flex:1;font-size:13px;font-weight:500;border:0;padding:0;margin:0}
+.dev-edit-btn{font-size:11.5px;padding:4px 10px;flex:none}
+.dev-detail-modal{max-width:640px}
+.dev-detail-hero{display:flex;align-items:flex-start;gap:16px;padding:16px 18px;background:#fff;
+  border:1px solid rgba(42,36,24,.08);border-radius:14px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+.dev-detail-hero .dh-main{flex:1;min-width:0}
+.dev-detail-hero .dh-id{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--soot)}
+.dev-detail-hero .dh-meta{font-size:13px;color:var(--text-dim);margin-top:6px;line-height:1.6}
+.dev-detail-hero .dh-stat{margin-left:auto;text-align:right;flex:none}
+.dev-detail-hero .dh-stat .sk{font-size:11px;color:var(--faint)}
+.dev-detail-hero .dh-stat .sv{font-family:var(--mono);font-size:20px;color:var(--sage);margin-top:2px}
+.dev-detail-photo{width:112px;height:112px;flex:none;background:var(--s2);border:1px dashed var(--edge2);
+  border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--faint);font-size:11px;text-align:center;line-height:1.5;padding:8px}
+.dev-detail-photo .ph-ico{font-size:28px;opacity:.45;margin-bottom:4px}
+.dev-detail-body{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.dev-detail-body{grid-template-columns:1fr}}
+.dev-info-card{background:#fff;border:1px solid rgba(42,36,24,.08);border-radius:12px;padding:14px 16px}
+.dev-info-card h5{font-size:13px;font-weight:600;color:var(--soot);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.dev-info-card .dkv{display:grid;gap:8px}
+.dev-info-card .dkv div{background:var(--s2);padding:8px 10px;border-radius:8px;font-size:12.5px}
+.dev-info-card .dkv b{display:block;font-size:10.5px;color:var(--faint);font-weight:500;margin-bottom:2px}
+.dev-detail-timeline{position:relative;padding-left:28px;margin-top:4px}
+.dev-detail-timeline::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,var(--sage),var(--edge2));border-radius:1px}
+.dev-detail-node{position:relative;margin-bottom:12px}
+.dev-detail-node:last-child{margin-bottom:0}
+.dev-detail-node .dn-dot{position:absolute;left:-28px;top:14px;width:20px;height:20px;border-radius:50%;
+  background:var(--sage);border:3px solid #fff;box-shadow:0 0 0 2px var(--sage);z-index:1}
+.dev-detail-node .dn-card{background:var(--s2);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.dev-detail-node .dn-card b{display:block;font-size:12px;color:var(--soot);margin-bottom:4px}
+.zone-preview-modal{max-width:600px}
+.zone-preview-hero{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;background:#fff;
+  border:1px solid rgba(42,36,24,.08);border-radius:14px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+.zone-preview-hero .zp-ico{font-size:36px;flex:none;line-height:1}
+.zone-preview-hero .zp-main{flex:1;min-width:0}
+.zone-preview-hero .zp-title{font-size:17px;font-weight:600;color:var(--soot)}
+.zone-preview-hero .zp-sub{font-size:13px;color:var(--text-dim);margin-top:4px;line-height:1.5}
+.zone-preview-hero .zp-stat{text-align:right;flex:none}
+.zone-preview-hero .zp-stat .sk{font-size:11px;color:var(--faint)}
+.zone-preview-hero .zp-stat .sv{font-family:var(--mono);font-size:20px;color:var(--sage);margin-top:2px}
+.zone-cap-bar{margin-top:10px;height:8px;background:var(--s3);border-radius:4px;overflow:hidden}
+.zone-cap-bar i{display:block;height:100%;background:var(--sage);border-radius:4px}
+.zone-dev-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.zone-dev-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;
+  border:1px solid rgba(42,36,24,.08);border-radius:10px;cursor:pointer;transition:background .15s,box-shadow .15s,border-color .15s;
+  box-shadow:0 2px 8px rgba(42,36,24,.06)}
+.zone-dev-row:hover{background:rgba(200,148,46,.1);border-color:rgba(200,148,46,.3);box-shadow:0 4px 14px rgba(200,148,46,.12)}
+.zone-dev-row:active{background:rgba(200,148,46,.16)}
+.zone-dev-row .zdr-ico{font-size:20px;flex:none}
+.zone-dev-row .zdr-main{flex:1;min-width:0}
+.zone-dev-row .zdr-name{font-size:13px;font-weight:500;color:var(--soot)}
+.zone-dev-row .zdr-sum{font-size:11.5px;color:var(--faint);margin-top:2px}
+.zone-dev-row .zdr-badge{font-size:10.5px;padding:2px 8px;border-radius:10px;font-weight:500;flex:none}
+.zone-dev-row .zdr-badge.run{background:rgba(107,143,66,.12);color:var(--moss)}
+.zone-dev-row .zdr-badge.alarm{background:rgba(201,69,50,.12);color:var(--alarm)}
+.zone-dev-row .zdr-badge.off{background:var(--s3);color:var(--faint)}
+.zone-dev-row .zdr-badge.stby{background:rgba(107,159,212,.12);color:#5A8FB8}
+.zone-batch-list{display:flex;flex-direction:column;gap:8px}
+.zone-batch-item{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:8px 12px;background:var(--s2);border-radius:8px;font-size:12.5px}
+.zone-batch-item.clickable{padding:10px 12px;background:#fff;border:1px solid rgba(42,36,24,.08);
+  border-radius:10px;box-shadow:0 2px 8px rgba(42,36,24,.06);cursor:pointer;
+  transition:background .15s,box-shadow .15s,border-color .15s}
+.zone-batch-item.clickable:hover,.zone-batch-item.clickable:active{
+  background:rgba(200,148,46,.1);border-color:rgba(200,148,46,.35);box-shadow:0 4px 14px rgba(200,148,46,.15)}
+.zone-batch-item b{color:var(--soot);font-family:var(--mono);font-size:12px}
+.zone-section{margin-bottom:14px}
+.zone-section h5{font-size:13px;font-weight:600;color:var(--soot);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.acct{cursor:pointer}
+.acct:hover b{color:var(--text)}
+.acct .role{font-size:11px;color:var(--faint)}
+.login-hint{font-size:12px;color:var(--text-faint);margin-bottom:12px;padding:10px 12px;background:var(--s2);border-radius:var(--radius-sm)}
+.dev-form-row{margin-bottom:10px}
+.dev-form-row label{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:4px}
+#factory-cards.factory-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,clamp(140px,16vw,200px)),1fr));gap:clamp(8px,1.2vw,12px);width:100%;min-width:0}
+#factory-cards .fc{background:#fff;border:none;border-radius:14px;padding:clamp(12px,1.5vw,14px) clamp(12px,1.8vw,16px);
+  font-size:clamp(11.5px,1.2vw,12.5px);box-shadow:0 2px 12px rgba(42,36,24,.08);min-width:0;overflow:hidden;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;position:relative}
+#factory-cards .fc:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+#factory-cards .fc .fc-ico{margin-bottom:6px;line-height:1;display:flex;align-items:center}
+#factory-cards .fc .fc-ico img{width:clamp(28px,3vw,36px);height:clamp(28px,3vw,36px);object-fit:contain}
+.ic-ico{width:20px;height:20px;object-fit:contain;display:inline-block;vertical-align:middle;flex:none}
+.ic-ico-lg{width:32px;height:32px}
+.ic-ico-xl{width:40px;height:40px}
+.dev-card .ico img{width:28px;height:28px;object-fit:contain}
+.zone-preview-hero .zp-ico img{width:40px;height:40px;object-fit:contain}
+.zone-preview-hero .zp-ico{font-size:0;line-height:1}
+
+/* ---- table ---- */
+.tools{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.seg{display:flex;border-radius:20px;background:var(--s2);padding:3px;box-shadow:inset 0 1px 2px rgba(42,36,24,.05)}
+.seg button{padding:6px 14px;background:none;border:0;border-right:0;color:var(--dim);cursor:pointer;font-size:13px;border-radius:16px;transition:.12s}
+.seg button:last-child{border-right:0}
+.seg button.on{background:#fff;color:var(--sage);font-weight:600;box-shadow:0 1px 4px rgba(42,36,24,.08)}
+.tools input[type=date],.tools input[type=text],.tools select{background:#fff;border:1px solid rgba(42,36,24,.08);
+  border-radius:10px;padding:7px 11px}
+.date-range{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--faint)}
+.date-range input{width:130px}
+.batch-export-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;margin-bottom:14px;
+  background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(42,36,24,.08);font-size:12.5px;color:var(--text-dim)}
+.batch-export-bar b{font-family:var(--mono);color:var(--soot);font-weight:500}
+.page-cards{display:flex;flex-direction:column;gap:10px}
+#factory-cards .fc b{display:block;font-size:clamp(12.5px,1.3vw,14px);font-weight:600;color:var(--soot);margin-bottom:3px;overflow-wrap:anywhere}
+#factory-cards .fc .fc-sub{font-size:clamp(11px,1.1vw,12px);color:var(--faint);font-family:var(--mono);margin-bottom:4px}
+#factory-cards .fc .st{color:var(--moss);font-size:clamp(10.5px,1.1vw,11.5px);margin-top:auto;padding-right:18px}
+#factory-cards .fc .st.idle{color:var(--faint)}
+#factory-cards .fc .st.alarm{color:var(--alarm)}
+#factory-cards .fc .fc-arr{position:absolute;right:12px;bottom:12px;color:var(--faint);font-size:14px}
+
+input[type=text],input[type=number],input[type=time],input[type=date],select{background:var(--s1);border:1px solid var(--edge2);
+  color:var(--text);padding:7px 11px;border-radius:3px;outline:none;width:100%}
+input:focus,select:focus{border-color:var(--ember)}
+.search,.search-box{width:210px;flex:none}
+.search-box input{width:100%}
+.table-wrap{overflow-x:auto;border:none;border-radius:14px;background:#fff;box-shadow:0 2px 12px rgba(42,36,24,.08)}
+.table-wrap table tbody tr:last-child td{border-bottom:0}
+.cell-sub{font-size:12px;color:var(--text-dim);margin-top:2px}
+.cell-sub.warn{color:var(--alarm)}
+.cell-mono{font-family:var(--mono)}
+.status-dot,.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.status-dot.run,.dot.run{background:var(--moss)}.status-dot.cure,.dot.cure{background:var(--ember)}.status-dot.done,.dot.done{background:var(--faint)}
+.tag-real,.tag.real{border-color:var(--moss);color:var(--moss)}
+.tag{font-family:var(--mono);font-size:9.5px;padding:1px 6px;border:1px solid var(--edge2);color:var(--faint);
+  border-radius:2px;margin-left:6px;vertical-align:1.5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:9px 11px;color:var(--faint);font-weight:400;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.07em;border-bottom:1px solid var(--edge2);white-space:nowrap}
+tbody td{padding:11px;border-bottom:1px solid var(--edge);vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--s2)}
+tbody tr.sel{background:rgba(200,148,46,.08)}
+.bn{font-family:var(--mono);font-size:13px}
+.sub{font-size:12px;color:var(--dim);margin-top:2px}
+.sub.w{color:var(--alarm)}
+.rt{text-align:right;font-family:var(--mono)}
+.mut{color:var(--faint)}
+
+/* ---- detail tabs ---- */
+.view,.page section{display:none}
+.view.on,.page section.on{display:block}
+#dtabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px}
+#dtabs button{padding:10px 16px;background:none;border:0;border-bottom:2px solid transparent;color:var(--text-dim);cursor:pointer;font-size:13.5px;margin-bottom:-1px;transition:all var(--transition-fast)}
+#dtabs button:hover{color:var(--text)}
+#dtabs button.on{color:var(--ember);border-bottom-color:var(--ember)}
+.pane{display:none}.pane.on{display:block}
+.dh{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.dh h2{font-family:var(--mono);font-size:22px;font-weight:400}
+.dh .m{font-size:12.5px;color:var(--faint);margin-top:3px}
+.dh .sp{flex:1}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--edge);
+  border:1px solid var(--edge);border-radius:4px;overflow:hidden;margin-bottom:18px}
+.kv>div{background:var(--bg-card);padding:12px 15px}
+.kv .k{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+.kv .v{font-family:var(--mono);font-size:20px;margin-top:2px}
+.kv .v small{font-size:11.5px;color:var(--dim)}
+.kv .v.hot{color:var(--alarm)}
+
+svg{display:block;width:100%;height:auto;overflow:visible}
+.legend,.chart-legend{display:flex;gap:15px;flex-wrap:wrap;padding:9px 0 0;font-size:12px;color:var(--text-dim)}
+.legend i,.chart-legend i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:5px}
+.chart{max-height:360px}
+.tip,.chart-tooltip{position:fixed;pointer-events:none;background:var(--s1);border:1px solid var(--edge2);padding:7px 10px;color:var(--text);
+  font-family:var(--mono);font-size:11.5px;opacity:0;transition:opacity .1s;z-index:80;white-space:nowrap;box-shadow:var(--shadow-md)}
+.tip b,.chart-tooltip b{color:var(--ember)}
+
+/* ---- timeline ---- */
+.timeline,.tl{display:grid;grid-template-columns:118px minmax(0,1fr)}
+.timeline .time,.tl .t{font-family:var(--mono);font-size:11.5px;color:var(--text-faint);padding:15px 15px 0 0;text-align:right}
+.timeline .node,.tl .b{border-left:1px solid var(--border);padding:0 0 18px 22px;position:relative}
+.timeline .node::before,.tl .b::before{content:"";position:absolute;left:-4px;top:19px;width:7px;height:7px;border-radius:50%;
+  background:var(--faint);border:2px solid var(--paper)}
+.timeline .node.hot::before,.timeline .node.current::before,.tl .b.hot::before{background:var(--ember)}
+.timeline .node.fut,.tl .b.fut{border-left-style:dashed}
+.timeline .node.fut::before,.tl .b.fut::before{background:var(--s1);border:1px solid var(--border)}
+.timeline .content,.tl .b .c{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px}
+.timeline .node.fut .content,.tl .b.fut .c{background:none;border-style:dashed;color:var(--text-faint)}
+.timeline .content h4,.tl .b .c h4{font-size:14px;font-weight:500;margin-bottom:4px}
+.timeline .content p,.tl .b .c p{font-size:12.5px;color:var(--text-dim)}
+.timeline .node.fut .content p,.tl .b.fut .c p{color:var(--text-faint)}
+
+/* ---- anomaly ---- */
+.anomaly-card,.an{border:none;border-left:4px solid var(--alarm);border-radius:14px;
+  background:#fff;padding:14px 17px;margin-bottom:10px;box-shadow:0 2px 12px rgba(42,36,24,.08)}
+.anomaly-card.ok,.an.ok{border-left-color:var(--moss);opacity:.88}
+.anomaly-card.alarm,.anomaly-card.warn{border-left-color:var(--alarm)}
+.anomaly-card .top,.an .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:5px}
+.anomaly-card .date,.an .when{font-family:var(--mono);font-size:12.5px;color:var(--alarm)}
+.anomaly-card.ok .date,.an.ok .when{color:var(--moss)}
+.anomaly-card .sev,.an .sev{font-family:var(--mono);font-size:10.5px;padding:1px 7px;border:1px solid var(--edge2);color:var(--dim)}
+.anomaly-card .sev.alarm,.anomaly-card .sev.warn,.an .sev.hi{border-color:var(--alarm);color:var(--alarm)}
+.anomaly-card .rule-tag,.an .rule{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);border:1px solid var(--edge2);padding:1px 6px}
+.anomaly-card .batch-label{font-size:12.5px;color:var(--text-faint)}
+.anomaly-card .desc,.an p{font-size:13px;color:var(--text-dim);margin-bottom:8px}
+.anomaly-card .meta{font-size:12.5px;color:var(--text-faint);margin-bottom:8px}
+.anomaly-card .fix,.an .fix{font-size:12.5px;border-top:1px dashed var(--border);padding-top:8px;margin-top:8px}
+.anomaly-card .fix.ok,.an .fix{color:var(--moss)}
+.anomaly-card .fix.alarm{color:var(--ember)}
+.todo-action-btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 14px;font-size:12.5px;font-weight:500;
+  border:none;border-radius:12px;cursor:pointer;font-family:inherit;background:#fff;color:var(--dim);
+  box-shadow:0 2px 10px rgba(42,36,24,.1);transition:transform .12s,box-shadow .12s;white-space:nowrap}
+.todo-action-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(42,36,24,.14)}
+.todo-action-btn.primary{background:var(--sage);color:#fff;box-shadow:0 3px 12px rgba(74,107,66,.28)}
+.todo-action-btn.primary:hover{box-shadow:0 5px 16px rgba(74,107,66,.32)}
+.todo-sev-pill{display:inline-block;padding:4px 11px;border-radius:10px;font-size:10.5px;font-family:var(--mono);
+  background:#fff;box-shadow:0 2px 8px rgba(42,36,24,.08);border:none}
+.todo-sev-pill.alarm{color:var(--alarm)}
+.todo-sev-pill.warn{color:var(--ember)}
+.anomaly-card .top .actions{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto;align-items:center}
+
+/* ---- modal ---- */
+.mask{position:fixed;inset:0;background:rgba(42,36,24,.38);display:none;align-items:flex-start;
+  justify-content:center;padding:60px 20px;z-index:100;overflow:auto}
+@media(max-width:760px){.mask{align-items:center;padding:20px 16px;padding-bottom:max(20px,env(safe-area-inset-bottom))}}
+.mask.on{display:flex}
+.modal{background:#fff;border:none;border-radius:14px;width:100%;max-width:520px;box-shadow:0 8px 32px rgba(42,36,24,.16)}
+.modal-header{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center}
+.modal-header h3{font-size:15px;font-weight:500;flex:1}
+.modal-header .close,.modal h3 .x{margin-left:auto;background:none;border:0;color:var(--text-faint);cursor:pointer;font-size:19px;line-height:1}
+.modal-body,.mb{padding:18px 20px}
+.form-row,.fr{display:grid;grid-template-columns:64px repeat(2,1fr);gap:9px;align-items:center;margin-bottom:9px}
+.form-row label,.fr label{font-size:12.5px;color:var(--text-dim)}
+.form-header,.fh{display:grid;grid-template-columns:64px repeat(2,1fr);gap:9px;margin-bottom:7px}
+.form-header span,.fh span{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);letter-spacing:.06em}
+.form-row2,.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.form-row2 label,.fr2 label{font-size:12.5px;color:var(--text-dim);display:block;margin-bottom:5px}
+.form-input,input[type=text],input[type=number],input[type=time],select{background:var(--s1);border:1px solid var(--edge2);
+  color:var(--text);padding:7px 11px;border-radius:var(--radius-sm);outline:none;width:100%}
+.modal-footer,.mf{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end}
+.form-error,.err{color:var(--alarm);font-size:12.5px;margin-top:9px;display:none}
+.form-error:empty{display:none}
+.pre{margin-top:14px;padding:11px 13px;background:var(--s2);border:1px solid var(--edge);font-size:12.5px;color:var(--dim)}
+.pre b{color:var(--text);font-weight:500}
+
+/* ---- toast ---- */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--s1);border:1px solid var(--edge2);border-left:3px solid var(--moss);color:var(--text);
+  padding:12px 18px;font-size:13.5px;opacity:0;transition:.22s;z-index:200;pointer-events:none;max-width:520px;box-shadow:var(--shadow-lg)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.bad{border-left-color:var(--alarm)}
+.toast em{font-style:normal;display:block;color:var(--dim);font-size:12.5px;margin-top:3px}
+
+.sheet{background:var(--s1);color:var(--soot);padding:20px;font-family:var(--mono);font-size:11.5px;line-height:1.7;border:1px solid var(--edge)}
+.sheet h5{font-family:var(--serif);font-size:15px;margin-bottom:2px}
+.sheet .hr{border-top:1px solid #C7BDA6;margin:9px 0}
+.sheet table td{border:0;padding:1px 0;font-size:11px;color:var(--soot)}
+.sheet table td:first-child{color:var(--faint);width:92px}
+.trace{display:grid;grid-template-columns:110px 1fr;gap:20px;align-items:start}
+.qr{width:104px;height:104px;display:grid;grid-template:repeat(11,1fr)/repeat(11,1fr);gap:1px}
+.qr i{background:var(--soot)}.qr i.o{background:transparent}
+.tline div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--edge);font-size:13px}
+.tline div:last-child{border:0}
+.tline span:first-child{color:var(--faint)}
+.tline span:last-child{font-family:var(--mono)}
+.hint{color:var(--text-faint);font-size:12.5px;margin-top:12px;line-height:1.7}
+
+/* ---- mobile ---- */
+.mobile-header{display:none;align-items:center;gap:10px;padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top));
+  background:var(--s1);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30;box-shadow:var(--shadow-sm)}
+.mobile-header .mh-brand{font-family:var(--serif);font-size:15px;color:var(--sage);font-weight:700;letter-spacing:.12em;flex:none}
+.mobile-header h1{font-size:16px;font-weight:500;flex:1;text-align:center}
+.mobile-header .mh-actions{display:flex;align-items:center;gap:8px;flex:none}
+.mobile-header .mh-avatar{width:32px;height:32px;border-radius:50%;background:var(--sage-bg);border:1px solid var(--edge2);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--sage);cursor:pointer}
+.drawer{display:none}
+.mobile-nav{position:fixed;left:0;right:0;bottom:0;display:none;align-items:flex-end;
+  background:var(--s1);border-top:1px solid var(--border);z-index:40;
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(42,36,24,.08)}
+.mobile-nav .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 8px;
+  background:none;border:0;color:var(--text-faint);font-size:10px;cursor:pointer;position:relative;min-width:0}
+.mobile-nav .tab .icon{font-size:20px;line-height:1}
+.mobile-nav .tab .label{font-size:10px;white-space:nowrap}
+.mobile-nav .tab.on{color:var(--sage);font-weight:600}
+.mobile-nav .tab .cnt{position:absolute;top:2px;right:calc(50% - 22px);font-family:var(--mono);font-size:9px;
+  background:var(--sage);color:#fff;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.mobile-nav .tab .cnt.alarm{background:var(--alarm)}
+.mobile-nav .tab .cnt.zero{display:none}
+.mobile-nav .tab-center{flex:1.15;margin-top:-20px}
+.mobile-nav .tab-center .icon-wrap{width:52px;height:52px;border-radius:50%;background:var(--sage);color:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(74,107,66,.38);transition:transform .15s,background .15s}
+.mobile-nav .tab-center .icon-wrap .icon{font-size:24px}
+.mobile-nav .tab-center.on .icon-wrap{background:var(--ember);transform:scale(1.04)}
+.mobile-nav .tab-center .label{font-weight:600;color:var(--soot);margin-top:2px}
+.mobile-nav .tab-center.on .label{color:var(--ember)}
+.mobile-fab{position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:50%;background:var(--sage);
+  color:#fff;border:0;font-size:28px;font-weight:400;cursor:pointer;display:none;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(74,107,66,.35);z-index:41;transition:transform .15s,box-shadow .15s}
+.mobile-fab:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(74,107,66,.45)}
+@media(max-width:760px){.mobile-fab{right:18px;bottom:calc(76px + env(safe-area-inset-bottom));width:52px;height:52px;font-size:24px}}
+.batch-card-mobile{display:none;border:none;border-radius:14px;background:#fff;
+  padding:14px 16px;margin-bottom:10px;cursor:pointer;box-shadow:0 2px 12px rgba(42,36,24,.08);
+  transition:transform .12s,box-shadow .12s}
+.batch-card-mobile:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(42,36,24,.1)}
+.batch-card-mobile .top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.batch-card-mobile .bn{font-family:var(--mono);font-size:14px}
+.batch-card-mobile .info{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;color:var(--text-faint)}
+.batch-card-mobile .info .val{display:block;color:var(--text);font-family:var(--mono);margin-top:2px}
+.now .v.ember{color:var(--ember)}
+
+/* ---- today focus ---- */
+.action-banner{display:flex;align-items:center;gap:14px;padding:14px 18px;margin-bottom:16px;border-radius:var(--radius);
+  background:linear-gradient(90deg,rgba(107,143,66,.12),rgba(200,148,46,.08));border:1px solid var(--border);
+  animation:slideDown .35s ease;box-shadow:var(--shadow-sm)}
+.action-banner.alarm{background:linear-gradient(90deg,rgba(201,69,50,.12),rgba(201,69,50,.05));border-color:rgba(201,69,50,.35)}
+.action-banner.warn{background:linear-gradient(90deg,rgba(200,148,46,.14),rgba(200,148,46,.06));border-color:rgba(200,148,46,.35)}
+.action-banner .ab-icon{font-size:20px;line-height:1;flex:none}
+.action-banner .ab-text{flex:1;font-size:14px;font-weight:500}
+.action-banner .ab-sub{font-size:12.5px;color:var(--text-dim);font-weight:400;margin-top:2px}
+.hero-focus{padding:0;overflow:hidden}
+.focus-head{display:flex;align-items:center;justify-content:space-between;padding:14px 17px;border-bottom:1px solid var(--border)}
+.batch-tag{font-family:var(--mono);font-size:12px;color:var(--text-faint)}
+.focus-body{padding:20px 17px 16px}
+.focus-metric{text-align:center;margin-bottom:18px}
+.focus-val{font-family:var(--mono);font-size:52px;line-height:1;font-weight:400;transition:color .3s}
+.focus-val small{font-size:22px;color:var(--text-dim)}
+.focus-val.hot{color:var(--alarm);animation:pulse 2s ease-in-out infinite}
+.focus-val.warn{color:var(--ember)}
+.focus-val.ok{color:var(--moss)}
+.focus-label{font-size:13.5px;color:var(--text-dim);margin-top:8px}
+.range-bar{margin:0 4px 18px}
+.range-track{position:relative;height:10px;border-radius:5px;overflow:hidden;background:var(--s2);
+  border:1px solid var(--border)}
+.range-zone{position:absolute;top:0;bottom:0}
+.range-zone.danger{left:0;width:26.3%;background:rgba(201,69,50,.22)}
+.range-zone.ok{left:26.3%;right:0;background:rgba(107,143,66,.2)}
+.range-marker{position:absolute;top:-3px;width:16px;height:16px;border-radius:50%;background:var(--ember);
+  border:2px solid var(--s1);transform:translateX(-50%);transition:left .6s cubic-bezier(.34,1.2,.64,1);box-shadow:0 0 0 4px rgba(200,148,46,.22)}
+.range-marker.hot{background:var(--alarm);box-shadow:0 0 0 4px rgba(201,69,50,.22);animation:pulse 2s ease-in-out infinite}
+.range-labels{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--mono);font-size:10px;color:var(--text-faint)}
+.range-labels .limit{color:var(--alarm)}
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.metrics-row div{background:var(--bg-card);padding:10px 12px;text-align:center}
+.metrics-row .mk{font-family:var(--mono);font-size:10px;color:var(--text-faint)}
+.metrics-row .mv{font-family:var(--mono);font-size:18px;margin-top:2px}
+.metrics-row .mv small{font-size:11px;color:var(--text-dim)}
+.metrics-row .mv.hot{color:var(--alarm)}
+.toggle-metrics{display:block;width:100%;margin-top:12px;padding:8px;background:none;border:1px dashed var(--border);
+  color:var(--text-faint);font-size:12.5px;cursor:pointer;border-radius:var(--radius-sm)}
+.toggle-metrics:hover{color:var(--text);border-color:var(--text-dim)}
+.metrics-fold{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.metrics-fold.open{max-height:120px}
+.sensor-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--moss);padding:0 17px 12px}
+.sensor-status .dot-live{width:7px;height:7px;border-radius:50%;background:var(--moss);animation:pulse 2s ease-in-out infinite}
+.sensor-status.offline{color:var(--alarm)}
+.sensor-status.offline .dot-live{background:var(--alarm)}
+.weather-prep{margin-top:16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg-card);overflow:hidden}
+.weather-prep .wp-head{padding:12px 17px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.weather-prep .wp-head h4{font-size:14px;font-weight:500}
+.weather-prep .wp-body{padding:14px 17px;font-size:13px;color:var(--text-dim);line-height:1.7}
+.weather-prep .wp-action{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin-top:10px;border-radius:var(--radius-sm);
+  background:var(--s2);border:1px solid var(--border)}
+.weather-prep .wp-action.warn{border-color:rgba(200,148,46,.4);background:rgba(200,148,46,.1)}
+.weather-prep .wp-action .ico{flex:none;font-size:16px}
+.weather-prep .wp-action b{display:block;font-weight:500;color:var(--text);font-size:13px}
+.weather-prep .wp-action span{font-size:12.5px;color:var(--text-dim)}
+.log-archive{font-size:12px;color:var(--text-faint);padding:8px 0 12px;border-bottom:1px dashed var(--border);margin-bottom:8px}
+
+/* ---- today workflow ---- */
+.today-intro{font-size:14px;color:var(--text-dim);margin-bottom:22px;line-height:1.5}
+.flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1100px){.flow-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.flow-grid{grid-template-columns:repeat(2,1fr);gap:14px}}
+@media(max-width:480px){.flow-grid{grid-template-columns:1fr}}
+.flow-card{display:flex;flex-direction:column;background:#fff;border:1px solid rgba(42,36,24,.06);
+  border-radius:16px;cursor:pointer;transition:transform .18s,box-shadow .18s;overflow:hidden;
+  box-shadow:0 2px 8px rgba(42,36,24,.05);position:relative;height:100%}
+.flow-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(42,36,24,.1)}
+.flow-card .fc-art{width:100%;aspect-ratio:1;flex:1 1 auto;display:flex;align-items:center;justify-content:center;
+  padding:clamp(6px,2.5vw,14px) clamp(4px,1.5vw,10px) 0;background:#fff;box-sizing:border-box;min-height:0}
+.flow-card .fc-art img{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;
+  object-position:center center;display:block;pointer-events:none;user-select:none}
+.flow-card .fc-body{padding:6px clamp(14px,3vw,20px) 0;flex:none}
+.flow-card .fc-title{font-size:clamp(14px,1.6vw,16px);font-weight:700;color:var(--soot);margin-bottom:3px}
+.flow-card .fc-sub{font-size:clamp(11.5px,1.2vw,12.5px);color:var(--faint);line-height:1.4}
+.flow-card .fc-foot{display:flex;align-items:center;justify-content:space-between;
+  padding:10px clamp(14px,3vw,20px) clamp(14px,2.5vw,18px);margin-top:auto;flex:none}
+.flow-card .fc-pend{font-size:12.5px;color:var(--faint)}
+.flow-card .fc-pend b{font-weight:600;color:var(--pending);font-family:var(--mono)}
+.flow-card .fc-pend b.zero{color:var(--faint);font-weight:400}
+.flow-card .fc-arr{color:var(--faint);font-size:16px;transition:transform .15s,color .15s}
+.flow-card:hover .fc-arr{color:var(--sage);transform:translateX(3px)}
+.flow-panel{margin-top:4px;animation:fadeUp .25s ease}
+.flow-panel-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.flow-panel-head .fp-ico{width:52px;height:52px;flex:none;display:flex;align-items:center;justify-content:center}
+.flow-panel-head .fp-ico img{width:52px;height:52px;object-fit:contain}
+.flow-panel-head h2{font-size:20px;font-weight:600;flex:1;color:var(--soot)}
+.flow-panel-head .fp-sub{font-size:13px;color:var(--faint);margin-top:2px}
+.flow-batch-list{display:grid;gap:10px}
+.flow-batch{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid rgba(42,36,24,.08);
+  border-radius:12px;background:#fff;cursor:pointer;transition:background .12s,box-shadow .12s;
+  box-shadow:0 1px 4px rgba(42,36,24,.04)}
+.flow-batch:hover{background:#FAF8F4;box-shadow:0 4px 12px rgba(42,36,24,.08)}
+.flow-batch .fb-ico{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center}
+.flow-batch .fb-ico img{width:44px;height:44px;object-fit:contain}
+.flow-batch .fb-body{flex:1;min-width:0}
+.flow-batch .fb-id{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--soot)}
+.flow-batch .fb-meta{font-size:12.5px;color:var(--text-dim);margin-top:3px}
+.flow-batch .fb-stat{font-family:var(--mono);font-size:13px;text-align:right;color:var(--text-dim)}
+.flow-empty{padding:48px 24px;text-align:center;color:var(--text-faint);font-size:14px;
+  border:1px dashed var(--border);border-radius:12px;background:#fff}
+
+/* ---- flow sub-filters & track ---- */
+.flow-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.flow-filter{padding:6px 12px;border:1px solid var(--edge2);border-radius:20px;background:#fff;
+  color:var(--dim);font-size:12.5px;cursor:pointer;transition:.12s}
+.flow-filter:hover{border-color:var(--sage);color:var(--sage)}
+.flow-filter.on{background:rgba(74,107,66,.1);border-color:var(--sage);color:var(--sage);font-weight:600}
+.flow-filter .fn{font-family:var(--mono);margin-left:4px;opacity:.8}
+.buy-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:8px;margin-left:6px;font-weight:500}
+.buy-badge.pending{background:rgba(122,114,100,.12);color:var(--faint)}
+.buy-badge.buying{background:rgba(200,148,46,.15);color:var(--ember)}
+.buy-badge.inspecting{background:rgba(79,138,130,.14);color:var(--brine)}
+.buy-badge.passed{background:rgba(107,143,66,.14);color:var(--moss)}
+.buy-badge.failed{background:rgba(201,69,50,.12);color:var(--alarm)}
+
+.flow-track{animation:fadeUp .28s ease}
+.track-hero{display:flex;align-items:flex-start;gap:16px;padding:18px 20px;background:#fff;
+  border:1px solid rgba(42,36,24,.08);border-radius:14px;margin-bottom:18px;box-shadow:var(--shadow-sm)}
+.track-hero .th-id{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--soot)}
+.track-hero .th-meta{font-size:13px;color:var(--text-dim);margin-top:6px;line-height:1.6}
+.track-hero .th-stat{margin-left:auto;text-align:right;flex:none}
+.track-hero .th-stat .sk{font-size:11px;color:var(--faint)}
+.track-hero .th-stat .sv{font-family:var(--mono);font-size:22px;color:var(--sage);margin-top:2px}
+
+.track-timeline{position:relative;padding-left:28px}
+.track-timeline::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,var(--sage),var(--edge2));border-radius:1px}
+.track-node{position:relative;margin-bottom:14px;animation:fadeUp .4s ease both}
+.track-node:nth-child(1){animation-delay:.04s}
+.track-node:nth-child(2){animation-delay:.08s}
+.track-node:nth-child(3){animation-delay:.12s}
+.track-node:nth-child(4){animation-delay:.16s}
+.track-node:nth-child(5){animation-delay:.2s}
+.track-node:nth-child(6){animation-delay:.24s}
+.track-node:nth-child(7){animation-delay:.28s}
+.track-node:nth-child(8){animation-delay:.32s}
+.track-node .tn-dot{position:absolute;left:-28px;top:16px;width:22px;height:22px;border-radius:50%;
+  background:#fff;border:3px solid var(--edge2);z-index:1;transition:.2s}
+.track-node.done .tn-dot{border-color:var(--moss);background:var(--moss)}
+.track-node.done .tn-dot::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;color:#fff;font-size:10px;font-weight:700}
+.track-node.current .tn-dot{border-color:var(--sage);background:var(--sage);box-shadow:0 0 0 4px rgba(74,107,66,.18);
+  animation:pulse 2s ease-in-out infinite}
+.track-node.future .tn-dot{background:var(--s2)}
+.track-node.failed .tn-dot{border-color:var(--alarm);background:var(--alarm)}
+.track-card{background:#fff;border:1px solid rgba(42,36,24,.08);border-radius:12px;overflow:hidden;
+  cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.track-card:hover{box-shadow:0 4px 14px rgba(42,36,24,.08)}
+.track-node.current .track-card{border-color:rgba(74,107,66,.35);box-shadow:0 2px 12px rgba(74,107,66,.1)}
+.track-card-head{display:flex;align-items:center;gap:12px;padding:14px 16px;user-select:none}
+.track-card-head .tn-time{font-family:var(--mono);font-size:11.5px;color:var(--faint);min-width:88px;flex:none}
+.track-card-head .tn-title{font-size:14.5px;font-weight:600;color:var(--soot);flex:1}
+.track-card-head .tn-tag{font-size:10.5px;padding:2px 8px;border-radius:8px;flex:none}
+.track-card-head .tn-tag.ok{background:rgba(107,143,66,.12);color:var(--moss)}
+.track-card-head .tn-tag.cur{background:rgba(74,107,66,.12);color:var(--sage)}
+.track-card-head .tn-tag.wait{background:var(--s2);color:var(--faint)}
+.track-card-head .tn-chev{color:var(--faint);font-size:11px;transition:transform .2s}
+.track-node.open .tn-chev{transform:rotate(180deg)}
+.track-card-body{display:none;padding:0 16px 14px 104px;font-size:13px;color:var(--text-dim);line-height:1.7;
+  border-top:1px solid var(--edge)}
+.track-node.open .track-card-body{display:block;animation:slideDown .2s ease}
+.track-kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:8px}
+.track-kv div{background:var(--s2);padding:8px 10px;border-radius:8px;font-size:12px}
+.track-kv b{display:block;font-size:10.5px;color:var(--faint);font-weight:500;margin-bottom:2px}
+.track-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px dashed var(--edge)}
+.track-actions .btn{flex:none}
+
+/* ---- FAB action menu ---- */
+.fab-menu{position:fixed;right:28px;bottom:96px;z-index:42;display:none;flex-direction:column;gap:8px;
+  animation:fadeUp .2s ease}
+.fab-menu.on{display:flex}
+.fab-opt{display:flex;align-items:center;gap:10px;padding:12px 18px;background:#fff;border:1px solid var(--edge);
+  border-radius:12px;cursor:pointer;box-shadow:var(--shadow-lg);font-size:14px;font-weight:500;
+  color:var(--soot);transition:transform .12s,background .12s;white-space:nowrap}
+.fab-opt:hover{background:var(--sage-bg);transform:translateX(-4px)}
+.fab-opt .fo-ico{font-size:18px;display:flex;align-items:center}
+.fab-opt .fo-ico img{width:20px;height:20px}
+.registrar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;
+  background:var(--s2);border-radius:10px;margin-bottom:14px;font-size:13px}
+.registrar-row .registrar-label{color:var(--faint)}
+.registrar-row .registrar-val{font-weight:600;color:var(--sage)}
+.registrar-row input.registrar-input{border:0;background:transparent;font-weight:600;color:var(--sage);
+  text-align:right;width:auto;flex:1;cursor:default}
+.invoice-zone{border:2px dashed var(--edge2);border-radius:12px;padding:16px;text-align:center;margin-bottom:12px;
+  background:var(--s1);cursor:pointer;transition:.12s}
+.invoice-zone:hover{border-color:var(--sage);background:#fff}
+.invoice-zone.has-file{border-style:solid;border-color:var(--moss);background:rgba(107,143,66,.06)}
+.invoice-preview{max-height:120px;max-width:100%;border-radius:8px;margin-top:10px}
+.ai-parse-result{font-size:12.5px;color:var(--dim);padding:10px 12px;background:rgba(74,107,66,.08);
+  border-radius:10px;margin-top:10px;line-height:1.6;display:none}
+.ai-parse-result.on{display:block}
+.action-modal-wide{max-width:520px}
+.ship-qr-box{text-align:center;padding:12px 0}
+.ship-qr-box canvas{border-radius:10px;margin:0 auto}
+.ship-qr-url{font-family:var(--mono);font-size:11px;color:var(--faint);word-break:break-all;margin-top:10px}
+.ledger-table{width:100%;border-collapse:collapse;font-size:13px}
+.ledger-table th{text-align:left;padding:8px 10px;font-size:11px;color:var(--faint);font-weight:500;border-bottom:1px solid rgba(42,36,24,.08)}
+.ledger-table td{padding:10px;border-bottom:1px solid rgba(42,36,24,.06);vertical-align:top}
+.ledger-table tr:last-child td{border-bottom:0}
+.ledger-sub-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ledger-sub-tabs button{padding:6px 12px;border:1px solid var(--edge2);border-radius:16px;background:var(--s2);
+  color:var(--dim);font-size:12px;cursor:pointer;transition:.12s;white-space:nowrap}
+.ledger-sub-tabs button.on{background:var(--sage-pill);border-color:var(--sage);color:var(--sage);font-weight:500}
+.dev-panel-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 14px}
+.dp-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.dp-stat{background:var(--s2);border-radius:10px;padding:10px 12px;text-align:center}
+.dp-stat .k{font-size:10.5px;color:var(--faint)}
+.dp-stat .v{font-family:var(--mono);font-size:18px;color:var(--soot);margin-top:2px}
+.dp-stat .v small{font-size:11px;color:var(--dim)}
+.dp-stat .s{font-size:10.5px;color:var(--faint);margin-top:3px}
+.dp-alert{padding:9px 12px;border-radius:10px;font-size:12px;margin-bottom:10px;line-height:1.5}
+.dp-alert.alarm{background:rgba(201,69,50,.1);color:var(--alarm);border:1px solid rgba(201,69,50,.2)}
+.dp-alert.ok{background:rgba(107,143,66,.1);color:var(--moss);border:1px solid rgba(107,143,66,.2)}
+.dp-section{margin-bottom:12px}
+.dp-section h5{font-size:12.5px;font-weight:600;color:var(--soot);margin-bottom:8px}
+.dp-zone-link{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;
+  padding:9px 12px;margin-bottom:6px;background:#fff;border:1px solid rgba(42,36,24,.08);border-radius:10px;
+  font-size:12.5px;color:var(--soot);cursor:pointer;transition:.12s;box-shadow:0 1px 3px rgba(42,36,24,.04)}
+.dp-zone-link:hover{border-color:var(--sage);background:rgba(74,107,66,.04)}
+.dp-zone-link span{font-size:11px;color:var(--faint)}
+.dp-mini-list{display:flex;flex-direction:column;gap:6px}
+.dp-mini-list>div{display:flex;gap:10px;font-size:12px;padding:7px 10px;background:var(--s2);border-radius:8px}
+.dp-mini-list>div span:first-child{font-family:var(--mono);color:var(--faint);min-width:36px;flex:none}
+.dp-env-zones{display:flex;flex-direction:column;gap:6px}
+.dp-env-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s2);border-radius:8px;font-size:12px}
+.dp-env-row b{flex:1;font-weight:500;color:var(--soot)}
+.dp-env-row em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+.smart-temp .st-now{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.smart-temp .st-now>div{background:var(--s2);border-radius:8px;padding:8px 10px;text-align:center}
+.smart-temp .st-now b{display:block;font-family:var(--mono);font-size:17px;color:var(--soot)}
+.smart-temp .st-now span{font-size:10.5px;color:var(--faint)}
+.st-spark{width:100%;height:72px;display:block;margin:4px 0}
+.st-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--faint);margin-bottom:10px}
+.st-legend i{display:inline-block;width:12px;height:2px;vertical-align:middle;margin-right:4px}
+.st-devs{display:flex;flex-direction:column;gap:6px}
+.st-dev-card{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff;border:1px solid rgba(42,36,24,.08);
+  border-radius:10px;cursor:pointer;font-size:12px;transition:.12s}
+.st-dev-card:hover{border-color:var(--sage)}
+.st-dev-card b{display:block;font-size:12.5px;color:var(--soot)}
+.st-dev-card span{font-size:11px;color:var(--faint)}
+.st-hint{font-size:11.5px;color:var(--text-dim);padding:8px 10px;background:rgba(200,148,46,.08);border-radius:8px;line-height:1.5;margin-top:8px}
+#factory-cards .fc .fc-ico img{opacity:0;transition:opacity .2s}
+#factory-cards .fc .fc-ico img.loaded{opacity:1}
+#factory-cards .fc .fc-ico{min-width:clamp(28px,3vw,36px);min-height:clamp(28px,3vw,36px);
+  background:linear-gradient(110deg,var(--s2) 30%,var(--s3) 50%,var(--s2) 70%);background-size:200% 100%;
+  animation:fcShimmer 1.2s ease-in-out infinite;border-radius:8px}
+#factory-cards .fc .fc-ico:has(img.loaded){animation:none;background:none}
+@keyframes fcShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@media(max-width:760px){.fab-menu{right:18px;bottom:140px}.dp-stat-grid{grid-template-columns:1fr 1fr}}
+
+/* ---- batch summary ---- */
+.batch-summary{display:flex;gap:16px;flex-wrap:wrap;padding:14px 18px;margin-bottom:14px;background:#fff;
+  border:none;border-radius:14px;font-size:13px;box-shadow:0 2px 12px rgba(42,36,24,.08)}
+.batch-summary span{color:var(--text-faint)}
+.batch-summary b{font-family:var(--mono);font-weight:500;color:var(--text)}
+.batch-summary b.hot{color:var(--alarm)}
+
+/* ---- detail stats ---- */
+.detail-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.detail-stats>div{background:var(--bg-card);padding:14px 16px}
+.detail-stats .primary{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:linear-gradient(135deg,rgba(200,148,46,.08),var(--bg-card))}
+.detail-stats .primary .big{font-family:var(--mono);font-size:36px;line-height:1}
+.detail-stats .primary .big small{font-size:14px;color:var(--text-dim)}
+.detail-stats .sk{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em}
+.detail-stats .sv{font-family:var(--mono);font-size:20px;margin-top:4px}
+.detail-stats .sv.hot{color:var(--alarm)}
+.detail-tertiary{font-size:12.5px;color:var(--text-faint);margin:-12px 0 16px}
+
+/* ---- log by day ---- */
+.log-day{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:var(--bg-card)}
+.log-day-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;
+  transition:background var(--transition-fast)}
+.log-day-head:hover{background:var(--s2)}
+.log-day-head .date{font-family:var(--mono);font-size:13.5px;font-weight:500;min-width:72px}
+.log-day-head .sum{flex:1;font-size:12.5px;color:var(--text-dim)}
+.log-day-head .warn-tag{font-family:var(--mono);font-size:10px;color:var(--alarm);border:1px solid rgba(222,90,70,.4);padding:1px 6px;border-radius:2px}
+.log-day-head .chev{color:var(--text-faint);transition:transform .25s;font-size:12px}
+.log-day.open .log-day-head .chev{transform:rotate(180deg)}
+.log-day-body{display:none;border-top:1px solid var(--border)}
+.log-day.open .log-day-body{display:block}
+.log-day-body table{font-size:12.5px}
+.log-day-body td{padding:8px 11px}
+.log-day-body tr.bad{background:rgba(201,69,50,.07)}
+.log-toggle-all{font-size:12.5px;color:var(--text-faint);background:none;border:0;cursor:pointer;padding:4px 0;margin-bottom:10px}
+.log-toggle-all:hover{color:var(--ember)}
+
+/* ---- motion ---- */
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.72}}
+@keyframes cntBounce{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes chartDraw{to{stroke-dashoffset:0}}
+@keyframes popIn{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes ripple{0%{transform:scale(.4);opacity:.7}100%{transform:scale(2.2);opacity:0}}
+.todo-item{animation:fadeUp .35s ease both}
+.todo-item:nth-child(1){animation-delay:.05s}
+.todo-item:nth-child(2){animation-delay:.1s}
+.todo-item:nth-child(3){animation-delay:.15s}
+.todo-item:nth-child(4){animation-delay:.2s}
+nav .cnt.bounce,.drawer-panel .cnt.bounce{animation:cntBounce .45s ease}
+.chart-line-draw{stroke-dasharray:2000;stroke-dashoffset:2000;animation:chartDraw 1.4s ease forwards}
+.chart-anomaly-pop{animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both}
+.save-ripple{position:fixed;width:48px;height:48px;border-radius:50%;background:var(--moss);pointer-events:none;
+  z-index:300;animation:ripple .6s ease forwards}
+.pre{transition:background .25s,border-color .25s}
+.pre.alarm{background:rgba(201,69,50,.08);border-color:rgba(201,69,50,.3)}
+.pre.warn{background:rgba(200,148,46,.1);border-color:rgba(200,148,46,.35)}
+.pre.ok{background:rgba(107,143,66,.1);border-color:rgba(107,143,66,.35)}
+.pane{animation:fadeUp .25s ease}
+.anomaly-card{animation:fadeUp .3s ease both}
+
+/* ---- todo page ---- */
+.todo-page{display:flex;flex-direction:column;gap:16px}
+.todo-clock{padding:20px 24px;background:linear-gradient(135deg,var(--sage-bg) 0%,#fff 100%)}
+.todo-clock-inner{text-align:center}
+.todo-clock-label{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:8px}
+.todo-clock-date{font-size:15px;color:var(--dim);margin-bottom:4px}
+.todo-clock-time{font-family:var(--mono);font-size:clamp(32px,6vw,42px);font-weight:500;color:var(--soot);letter-spacing:.04em}
+.todo-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:600px){.todo-summary{grid-template-columns:1fr}}
+.todo-stat{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 12px rgba(42,36,24,.08);text-align:center}
+.todo-stat .k{font-size:12px;color:var(--faint);margin-bottom:6px}
+.todo-stat .v{font-family:var(--mono);font-size:28px;font-weight:500;color:var(--sage)}
+.todo-stat.alarm .v{color:var(--alarm)}
+.todo-workflow{padding:12px;display:flex;flex-direction:column;gap:10px}
+.todo-workflow .todo-item{border:none;border-radius:14px;background:#fff;padding:14px 16px;
+  box-shadow:0 2px 12px rgba(42,36,24,.08);margin:0}
+.todo-workflow .todo-item:last-child{border-bottom:0}
+.todo-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0}
+.todo-stat{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.todo-stat:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(42,36,24,.1)}
+.todo-stat.active{outline:2px solid var(--sage);outline-offset:2px}
+.todo-anom-open{display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.todo-anom-open .anomaly-card{margin:0}
+.batch-preview-modal{max-width:560px}
+.batch-preview-kv{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin:14px 0;font-size:13px}
+.batch-preview-kv div{display:flex;flex-direction:column;gap:2px}
+.batch-preview-kv b{font-size:11px;color:var(--faint);font-weight:500}
+.batch-preview-kv span{font-family:var(--mono);color:var(--soot)}
+.batch-preview-timeline{margin-top:12px}
+.batch-preview-node{padding:10px 12px;border-radius:10px;background:var(--s1);margin-bottom:8px;font-size:12.5px;border-left:3px solid var(--edge2)}
+.batch-preview-node.done{border-left-color:var(--moss)}
+.batch-preview-node.current{border-left-color:var(--ember);background:rgba(200,148,46,.06)}
+.batch-preview-node .bp-time{font-size:11px;color:var(--faint);font-family:var(--mono)}
+.batch-preview-node .bp-title{font-weight:600;margin:2px 0}
+.batch-preview-qr{margin:14px 0;padding:14px;border-radius:12px;background:var(--s1);text-align:center}
+.trace-qr-tag{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(107,143,66,.12);color:var(--moss);margin-left:6px}
+.track-qr-block{margin-top:16px;padding:16px;border-radius:12px;background:var(--s1);text-align:center}
+.detail-stats .primary .big.hot{color:var(--alarm)}
+.detail-stats .primary .big.warn{color:var(--ember)}
+.detail-stats .primary .big.ok{color:var(--moss)}
+.card-header{flex-wrap:wrap;gap:8px}
+.card-header .meta{margin-left:auto}
+.card-header .story-btn{margin-left:0}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:760px){
+  aside,.bar{display:none}
+  .mobile-header,.mobile-nav,.mobile-fab{display:flex}
+  .body{padding:18px 16px calc(88px + env(safe-area-inset-bottom))}
+  .table-wrap{display:none}
+  .batch-card-mobile{display:block}
+  .hero{grid-template-columns:1fr}
+}
+</style></head><body>
+
+<div class="mobile-header">
+  <div class="mh-brand">山熏</div>
+  <h1 id="mh-title">今日</h1>
+  <div class="mh-actions">
+    <button class="btn btn-sm" id="quick-m">＋</button>
+    <div class="mh-avatar" id="acct-av-m" onclick="openLogin()">?</div>
+  </div>
+</div>
+
+<aside>
+  <div class="brand"><div class="n">山<b>熏</b></div><div class="s">QINGZHEN · 清镇厂</div></div>
+  <nav>
+    <button class="on" data-v="today"><span class="nav-ico">☀</span>今日<span class="cnt" id="n-today">0</span></button>
+    <button data-v="batches"><span class="nav-ico">▦</span>批次</button>
+    <button data-v="factory"><span class="nav-ico">⌂</span>车间</button>
+    <button data-v="todo"><span class="nav-ico">☑</span>代办<span class="cnt alarm" id="n-todo">0</span></button>
+    <button data-v="ledger"><span class="nav-ico">☰</span>台账</button>
+  </nav>
+  <div class="acct" id="acct-d" onclick="openLogin()">
+    <div class="avatar" id="acct-av-d">?</div>
+    <div class="acct-info"><b id="acct-name-d">未登录</b><span class="role" id="acct-role-d">点击登录 · 登记设备</span></div>
+  </div>
+</aside>
+
+<main>
+  <div class="bar">
+    <h1 id="bar-t">今日</h1><span class="crumb" id="bar-c"></span>
+    <span class="sp"></span>
+    <button class="btn btn-ghost btn-sm" id="quick">登记</button>
+  </div>
+  <div class="body page">
+
+  <!-- ===== 今日 ===== -->
+  <section class="on" id="sec-today">
+    <p class="today-intro">点击模块，查看该环节的批次内容</p>
+    <div id="flow-home">
+      <div class="flow-grid" id="flow-grid"></div>
+    </div>
+    <div class="flow-panel" id="flow-panel" style="display:none">
+      <div class="flow-panel-head">
+        <button class="btn btn-ghost btn-sm" onclick="closeFlowPanel()">← 返回</button>
+        <div class="fp-ico" id="flow-ico"></div>
+        <div style="flex:1">
+          <h2 id="flow-title">—</h2>
+          <div class="fp-sub" id="flow-sub">—</div>
+        </div>
+        <span style="font-size:13px;color:var(--text-faint);font-family:var(--mono)" id="flow-count">—</span>
+      </div>
+      <div class="flow-filters" id="flow-filters" style="display:none"></div>
+      <div class="flow-batch-list" id="flow-batches"></div>
+    </div>
+    <div class="flow-track" id="flow-track" style="display:none">
+      <div class="flow-panel-head">
+        <button class="btn btn-ghost btn-sm" onclick="closeBatchTrack()">← 返回</button>
+        <div style="flex:1">
+          <h2 id="track-title">批次追踪</h2>
+          <div class="fp-sub" id="track-sub">—</div>
+        </div>
+      </div>
+      <div id="track-content"></div>
+    </div>
+  </section>
+
+  <!-- ===== 批次 ===== -->
+  <section id="sec-batches">
+    <div class="batch-summary" id="batch-summary"></div>
+    <div class="tools">
+      <div class="seg" id="seg">
+        <button class="on" data-c="all">全景</button>
+        <button data-c="buy">进货</button>
+        <button data-c="make">生产</button>
+        <button data-c="sell">出货</button>
+      </div>
+      <div class="search-box"><input type="text" id="q" placeholder="搜批次号或供应商"></div>
+      <select id="fst" style="width:120px"><option value="">全部状态</option></select>
+      <div class="date-range">
+        <input type="date" id="b-from" title="进货日起">
+        <span>至</span>
+        <input type="date" id="b-to" title="进货日止">
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="clearBatchFilters()">清除筛选</button>
+      <span class="sp"></span>
+      <button class="btn btn-primary btn-sm" onclick="exportBatches()">导出 CSV</button>
+      <span style="font-size:12.5px;color:var(--text-faint)" id="cnt"></span>
+    </div>
+    <div class="batch-export-bar" id="batch-export-bar"></div>
+    <div class="table-wrap"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
+    <div id="mobile-batches"></div>
+    <div style="margin-top:14px;font-size:12.5px;color:var(--text-faint);line-height:1.7">标 <span class="tag tag-real">实测</span> 的批次为真实数据，来自车间手写台账 66 张照片逐页转录。其余为结构示例，用于演示总表如何工作。</div>
+  </section>
+
+  <!-- ===== 批次详情 ===== -->
+  <section id="sec-detail">
+    <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:20px">
+      <div><h2 style="font-family:var(--mono);font-size:22px;font-weight:400">QZ-2608-01</h2><div style="font-size:12.5px;color:var(--text-faint);margin-top:4px">柴火腊肉 · 土猪后腿 · 演示供应商 B 320 斤 · 晾挂中</div></div>
+      <span class="sp"></span>
+      <button class="btn btn-ghost btn-sm" onclick="go('batches')">← 返回列表</button>
+    </div>
+    <div class="detail-stats">
+      <div class="primary">
+        <div>
+          <div class="sk">四点均湿 · 当前</div>
+          <div class="big" id="d-h">—</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sk">晾挂天数</div>
+          <div class="big">17<small> 天</small></div>
+        </div>
+      </div>
+      <div><div class="sk">四点均温</div><div class="sv" id="d-t">—</div></div>
+      <div><div class="sk">未处理异常</div><div class="sv" id="d-a">—</div></div>
+      <div><div class="sk">记录次数</div><div class="sv" id="d-n">—</div></div>
+    </div>
+    <div class="detail-tertiary" id="tl-p">—</div>
+    <div style="display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px" id="dtabs">
+      <button class="on" data-p="p-ov">概览</button>
+      <button data-p="p-log">过程记录</button>
+      <button data-p="p-an">异常</button>
+      <button data-p="p-sh">台账</button>
+      <button data-p="p-tr">溯源</button>
+    </div>
+
+    <div class="pane on" id="p-ov">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><h3>工艺曲线</h3><span class="meta" id="ov-r"></span>
+          <button class="btn btn-ghost btn-sm story-btn" onclick="tellStory()">讲断水事故</button></div>
+        <div class="card-body">
+          <svg class="chart" id="chart" viewBox="0 0 860 300" role="img" aria-label="车间温湿度曲线"></svg>
+          <div class="chart-legend">
+            <span><i style="background:var(--ember)"></i>四点均湿 %</span>
+            <span><i style="background:var(--brine)"></i>四点均温 ℃</span>
+            <span><i style="background:var(--text-faint)"></i>设定 16℃</span>
+            <span><i style="background:var(--alarm)"></i>异常</span>
+            <span><i style="background:#8AAFC4"></i>清镇有雨</span>
+          </div>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="time">8月4日</div><div class="node"><div class="content"><h4>进货与入缸腌制</h4><p>演示供应商 B散养土猪后腿 320 斤 · 18 元/斤 · 验收单已归档</p></div></div>
+        <div class="time">8月11日</div><div class="node"><div class="content"><h4>转入晾挂</h4><p>四测点开始记录 · 设定温度 16℃</p></div></div>
+        <div class="time">8月13日起</div><div class="node hot current"><div class="content"><h4>晾挂过程</h4><p id="tl-p-inline">进行中 · 点击查看过程记录</p></div></div>
+        <div class="time">待发生</div><div class="node fut"><div class="content"><h4>出库、称重与封存</h4><p>出库时称重才能算得率 · 封存时生成公开快照与溯源码</p></div></div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-log">
+      <div class="tools"><button class="btn btn-ghost btn-sm" onclick="openRec()">补录</button>
+        <button type="button" class="log-toggle-all" id="log-toggle-all">展开全部日期</button>
+        <span class="sp"></span><span style="font-size:12.5px;color:var(--text-faint)" id="log-c"></span></div>
+      <div id="log-days"></div>
+    </div>
+
+    <div class="pane" id="p-an"><div id="anlist"></div></div>
+
+    <div class="pane" id="p-sh">
+      <div class="tools"><button class="btn btn-primary" onclick="window.print()">打印 / 存为 PDF</button><span style="font-size:12.5px;color:var(--text-faint)">过程数据自动成表，不可追溯修改</span></div>
+      <div class="card"><div class="sheet" id="sheet"></div></div>
+    </div>
+
+    <div class="pane" id="p-tr">
+      <div class="card">
+        <div class="card-header"><h3>公开快照</h3><span class="meta">消费者扫码看到的内容</span></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:20px;align-items:start">
+            <div><div class="qr" id="qr" aria-hidden="true"></div><div style="font-family:var(--mono);font-size:10.5px;color:var(--text-faint);text-align:center;margin-top:8px">QZ-2608-01</div></div>
+            <div style="font-size:13px">
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">产品</span><span style="font-family:var(--mono)">柴火腊肉 · 土猪后腿</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">原料</span><span style="font-family:var(--mono)">贵州散养土猪</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">入缸腌制</span><span style="font-family:var(--mono)">8月04日</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">转入晾挂</span><span style="font-family:var(--mono)">8月11日</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">晾挂天数</span><span style="font-family:var(--mono)" id="tr-d">—</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">过程记录</span><span style="font-family:var(--mono)" id="tr-n">—</span></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--border)"><span style="color:var(--text-faint)">期间异常</span><span style="font-family:var(--mono)" id="tr-a">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:12.5px;color:var(--text-faint);line-height:1.7">同一个二维码，内部账号扫描进入本页全部数据；消费者账号扫描只读上表——单价、供应商合同、责任人、成本一律不下发。快照在批次封存时生成一次，扫码不访问主库。</div>
+    </div>
+  </section>
+
+  <!-- ===== 车间 3D ===== -->
+  <section id="sec-factory">
+    <div class="factory-wrap">
+      <div class="factory-header">
+        <div class="factory-subtitle">4号厂房 · 演示村 · 基于建施图（20260724-1）真实格局建模 <a href="assets/floorplan-cad.png" target="_blank">查看平面图 ↗</a></div>
+        <div class="factory-header-right">
+          <span class="factory-status"><i class="dot run"></i>生产中</span>
+          <span class="factory-datetime" id="factory-dt">2026-08-29 14:20</span>
+          <button class="btn btn-ghost btn-sm" onclick="scrollToDevicePanel()">查看列表</button>
+        </div>
+      </div>
+      <div class="factory-bldg-tabs" id="factory-bldg-tabs">
+        <button class="on" data-b="4">4号厂房</button>
+        <button data-b="1" class="muted" onclick="toastOtherBldg(1)">1号厂房</button>
+        <button data-b="2" class="muted" onclick="toastOtherBldg(2)">2号厂房</button>
+        <button data-b="3" class="muted" onclick="toastOtherBldg(3)">3号厂房</button>
+      </div>
+      <div class="factory-layout">
+        <div class="factory-canvas-col">
+          <div class="factory-canvas-wrap">
+            <div id="factory-canvas">
+              <img class="factory-iso-img" src="assets/factory-iso.jpg" alt="4号厂房等轴 3D 模型" loading="lazy" decoding="async">
+              <div id="factory-zones"></div>
+            </div>
+            <div class="factory-canvas-compass">N</div>
+            <div class="factory-canvas-legend">
+              <span><i class="run"></i>运行中</span>
+              <span><i class="stby"></i>待机</span>
+              <span><i class="alarm"></i>异常</span>
+              <span><i class="idle"></i>空闲可用</span>
+            </div>
+            <div class="factory-weather" id="factory-weather">清镇 · 加载中…</div>
+          </div>
+        </div>
+        <div class="device-panel" id="device-panel"></div>
+      </div>
+      <div class="factory-cards" id="factory-cards"></div>
+    </div>
+  </section>
+
+  <!-- ===== 代办 ===== -->
+  <section id="sec-todo">
+    <div class="todo-page">
+      <div class="todo-clock card">
+        <div class="todo-clock-inner">
+          <div class="todo-clock-label">清镇厂 · 当前时间</div>
+          <div class="todo-clock-date" id="todo-clock-date">—</div>
+          <div class="todo-clock-time" id="todo-clock-time">—</div>
+        </div>
+      </div>
+      <div class="todo-summary">
+        <div class="todo-stat alarm" id="todo-stat-anom-card" onclick="scrollTodoSection('anom')"><div class="k">待处理异常</div><div class="v hot" id="todo-stat-anom">0</div></div>
+        <div class="todo-stat" id="todo-stat-wf-card" onclick="scrollTodoSection('workflow')"><div class="k">流程待办</div><div class="v" id="todo-stat-workflow">0</div></div>
+        <div class="todo-stat" onclick="scrollTodoSection('anom')"><div class="k">全部待办</div><div class="v" id="todo-stat-total">0</div></div>
+      </div>
+      <div class="card" id="todo-anom-section" style="margin-bottom:16px">
+        <div class="card-header todo-section-head"><h3>异常记录</h3><span class="meta">点击卡片可跳转处理 · 规则触发</span></div>
+        <div class="card-body" style="padding-top:0"><div id="todo-anom-open" class="todo-anom-open"></div><div id="todo-anom" class="page-cards"></div></div>
+      </div>
+      <div class="card" id="todo-workflow-section">
+        <div class="card-header todo-section-head"><h3>流程待办</h3><span class="meta">批次流转 · 设备 · 跟进</span></div>
+        <div class="todo-workflow" id="todo-workflow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 台账 ===== -->
+  <section id="sec-ledger">
+    <div class="tools">
+      <div class="seg" id="ledger-grp">
+        <button class="on" data-g="purchase">采购类</button>
+        <button data-g="env">温湿度</button>
+        <button data-g="storage">仓储成品</button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="exportLedgerCsv()">导出 CSV</button>
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">打印 / PDF</button>
+    </div>
+    <div class="ledger-sub-tabs" id="ledger-sub-tabs"></div>
+    <div class="card" style="border:none;box-shadow:0 2px 12px rgba(42,36,24,.08)">
+      <div class="card-header"><h3 id="ledger-title">—</h3><span class="meta" id="ledger-meta">—</span></div>
+      <div class="card-body" style="padding:0;overflow-x:auto" id="ledger-body"></div>
+    </div>
+  </section>
+
+  </div>
+</main>
+
+<!-- 移动端底部导航：今日居中 -->
+<div class="mobile-nav">
+  <button class="tab" data-v="batches" onclick="goMobile('batches')"><span class="icon">▦</span><span class="label">批次</span></button>
+  <button class="tab" data-v="factory" onclick="goMobile('factory')"><span class="icon">⌂</span><span class="label">车间</span></button>
+  <button class="tab tab-center on" data-v="today" onclick="goMobile('today')">
+    <span class="icon-wrap"><span class="icon">☀</span></span>
+    <span class="label">今日</span>
+    <span class="cnt" id="m-n-today">0</span>
+  </button>
+  <button class="tab" data-v="todo" onclick="goMobile('todo')"><span class="icon">☑</span><span class="label">代办</span><span class="cnt alarm" id="m-n-todo">0</span></button>
+  <button class="tab" data-v="ledger" onclick="goMobile('ledger')"><span class="icon">☰</span><span class="label">台账</span></button>
+</div>
+
+<!-- 移动端 FAB -->
+<button class="mobile-fab" id="mfab" onclick="onFabClick()" title="快捷操作">＋</button>
+<div class="fab-menu" id="fab-menu">
+  <button class="fab-opt" onclick="openActionModal('buy')"><span class="fo-ico"><img src="assets/flow/buy.png" alt="" class="ic-ico"></span>登记采购</button>
+  <button class="fab-opt" onclick="openActionModal('rawin')"><span class="fo-ico"><img src="assets/icons/icon-raw.png" alt="" class="ic-ico"></span>原料入库</button>
+  <button class="fab-opt" onclick="openActionModal('stock')"><span class="fo-ico"><img src="assets/icons/icon-stock.png" alt="" class="ic-ico"></span>成品入库</button>
+  <button class="fab-opt" onclick="openActionModal('ship')"><span class="fo-ico"><img src="assets/flow/ship.png" alt="" class="ic-ico"></span>登记出库</button>
+  <button class="fab-opt" onclick="openActionModal('stage')"><span class="fo-ico"><img src="assets/flow/prep.png" alt="" class="ic-ico"></span>状态变更</button>
+</div>
+
+<!-- 录入弹窗（温湿度，仅批次详情用） -->
+<div class="mask" id="mask" onclick="closeMask(event)">
+  <div class="modal">
+    <div class="modal-header"><h3>补录读数 · QZ-2608-01</h3><button class="close" onclick="closeRec()">×</button></div>
+    <div class="modal-body">
+      <div style="font-size:12.5px;color:var(--text-faint);margin-bottom:14px;padding:10px 12px;background:var(--s2);border-radius:var(--radius-sm)">
+        车间已由 WiFi 探头每 10 分钟自动同步。此处仅用于探头校准或特殊情况的手工补录。</div>
+      <div class="form-header"><span></span><span>温度 ℃</span><span>湿度 %</span></div>
+      <div class="form-row"><label>测点 1</label><input type="number" step="0.1" id="t1" class="form-input"><input type="number" step="0.5" id="h1" class="form-input"></div>
+      <div class="form-row"><label>测点 2</label><input type="number" step="0.1" id="t2" class="form-input"><input type="number" step="0.5" id="h2" class="form-input"></div>
+      <div class="form-row"><label>测点 3</label><input type="number" step="0.1" id="t3" class="form-input"><input type="number" step="0.5" id="h3" class="form-input"></div>
+      <div class="form-row"><label>测点 4</label><input type="number" step="0.1" id="t4" class="form-input"><input type="number" step="0.5" id="h4" class="form-input"></div>
+      <div class="form-row2">
+        <div><label>自动读数 %</label><input type="number" step="0.5" id="fa" class="form-input"></div>
+        <div><label>室外温度 ℃</label><input type="number" step="1" id="fo" class="form-input"></div>
+        <div><label>时间</label><input type="time" id="ftm" class="form-input"></div>
+        <div><label>记录人</label><select id="fby" class="form-input"><option>石武举</option><option>徐巧益</option><option>杨明飞</option><option>李佳</option></select></div>
+      </div>
+      <div class="pre" id="pre"></div>
+      <div class="form-error" id="err"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeRec()">取消</button><button class="btn btn-primary" onclick="saveRec()">保存</button></div>
+  </div>
+</div>
+
+<!-- 快捷登记弹窗 -->
+<div class="mask" id="action-mask" onclick="closeActionMask(event)">
+  <div class="modal action-modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3 id="action-title">登记</h3><button class="close" onclick="closeActionModal()">×</button></div>
+    <div class="modal-body" id="action-body"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeActionModal()">取消</button><button class="btn btn-primary" onclick="saveAction()">确认登记</button></div>
+  </div>
+</div>
+
+<!-- 包装溯源码（成品入库时生成） -->
+<div class="mask" id="trace-qr-mask" onclick="closeTraceQrMask(event)">
+  <div class="modal" style="max-width:400px" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3 id="trace-qr-title">包装溯源码已生成</h3><button class="close" onclick="closeTraceQr()">×</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--dim);margin-bottom:12px;line-height:1.6" id="trace-qr-desc">请打印并粘贴于外包装。扫码登录后可查看本产品全流程溯源（与批次数据实时关联）。</p>
+      <div class="ship-qr-box" id="trace-qr-canvas"></div>
+      <div class="ship-qr-url" id="trace-qr-url"></div>
+      <p style="font-size:11px;color:var(--faint);margin-top:10px;line-height:1.5">演示环境：本地生成溯源码。生产环境可调用 <code style="font-size:10px">POST /api/trace/generate</code> 在入库完成时由服务端签发 token 并返回二维码。</p>
+    </div>
+    <div class="modal-footer"><button class="btn btn-primary" onclick="closeTraceQr()">完成</button></div>
+  </div>
+</div>
+
+<!-- 登录弹窗 -->
+<div class="mask" id="login-mask" onclick="closeLoginMask(event)">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header"><h3>登录</h3><button class="close" onclick="closeLogin()">×</button></div>
+    <div class="modal-body">
+      <div class="login-hint">登录后可登记、修改设备状态。演示账号：石红英 / 1234，李师傅 / 1234</div>
+      <div class="dev-form-row"><label>姓名</label>
+        <select id="login-user" class="form-input"><option value="石红英">石红英 · 负责人</option><option value="李师傅">李师傅 · 维护</option></select></div>
+      <div class="dev-form-row"><label>密码</label><input type="password" id="login-pass" class="form-input" placeholder="演示密码 1234"></div>
+      <div class="form-error" id="login-err"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeLogin()">取消</button><button class="btn btn-primary" onclick="doLogin()">登录</button></div>
+  </div>
+</div>
+
+<!-- 区域预览弹窗 -->
+<div class="mask" id="zone-preview-mask" onclick="closeZonePreviewMask(event)">
+  <div class="modal zone-preview-modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3 id="zone-preview-title">区域详情</h3><button class="close" onclick="closeZonePreview()">×</button></div>
+    <div class="modal-body" id="zone-preview-content"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeZonePreview()">关闭</button></div>
+  </div>
+</div>
+
+<!-- 批次预览弹窗 -->
+<div class="mask" id="batch-preview-mask" onclick="closeBatchPreviewMask(event)">
+  <div class="modal batch-preview-modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3 id="batch-preview-title">批次详情</h3><button class="close" onclick="closeBatchPreview()">×</button></div>
+    <div class="modal-body" id="batch-preview-content"></div>
+    <div class="modal-footer" id="batch-preview-footer">
+      <button class="btn btn-ghost" onclick="closeBatchPreview()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设备详情弹窗 -->
+<div class="mask" id="dev-detail-mask" onclick="closeDevDetailMask(event)">
+  <div class="modal dev-detail-modal" onclick="event.stopPropagation()">
+    <div class="modal-header"><h3 id="dev-detail-title">设备详情</h3><button class="close" onclick="closeDevDetail()">×</button></div>
+    <div class="modal-body" id="dev-detail-content"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeDevDetail()">关闭</button><button class="btn btn-primary" id="dev-detail-edit-btn" onclick="openDevEditFromDetail()">登记修改</button></div>
+  </div>
+</div>
+
+<!-- 设备登记弹窗 -->
+<div class="mask" id="dev-mask" onclick="closeDevMask(event)">
+  <div class="modal">
+    <div class="modal-header"><h3 id="dev-edit-title">登记设备</h3><button class="close" onclick="closeDevEdit()">×</button></div>
+    <div class="modal-body" id="dev-edit-body"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeDevEdit()">取消</button><button class="btn btn-primary" onclick="saveDevEdit()">保存</button></div>
+  </div>
+</div>
+
+<div class="chart-tooltip" id="tip"></div>
+<div id="toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-card);border:1px solid var(--border-light);border-left:3px solid var(--moss);padding:14px 20px;font-size:14px;opacity:0;transition:all .3s ease;z-index:200;pointer-events:none;max-width:480px;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg)"></div>
+
+<script src="js/core/config.js"></script>
+<script src="js/core/api.js"></script>
+<script src="api/trace.js"></script>
+<script src="assets/qrcode.min.js"></script>
+<script src="js/shared/dom.js"></script>
+<script src="js/domain/constants.js"></script>
+<script src="js/domain/batch-store.js"></script>
+<script src="js/domain/batch-workflow.js"></script>
+<script src="js/domain/trace-admin.js"></script>
+<script>
+let R=[];
+const OUT={"08-18":"21:54","08-24":"20:41"};
+const RAIN={"08-14":1,"08-17":2,"08-18":1,"08-19":1,"08-20":1,"08-25":1,"08-26":1,"08-27":2,"08-28":1};
+R.forEach(r=>r.src=r.src||'manual');
+
+/* 监测设备：WiFi 温湿度探头经 /ingest 每 10 分钟入库 */
+const SENSOR={
+  online:true, points:4, intervalMin:10, lastSyncMin:2,
+  devices:['S-01','S-02','S-03','S-04'],
+  live(){const l=last();return{mh:l.mh,mt:l.mt,out:l.out??22};}
+};
+const FORECAST={date:'8月30日',wx:'阵雨',tMin:22,tMax:28,corrTemp:0.49};
+function weatherAdvisory(){
+  const rise=FORECAST.tMax-23;
+  const estMt=15.7+rise*FORECAST.corrTemp;
+  const needAc=estMt>16.5;
+  return{
+    title:`${FORECAST.wx}，${FORECAST.tMin}–${FORECAST.tMax}℃`,
+    estMt:estMt.toFixed(1),
+    needAc,
+    ac:needAc?`午后车间均温预计 ${estMt.toFixed(1)}℃（设定 16℃），建议 12:00 前确认空调`:'午后升温有限，维持现设定即可',
+    hum:'湿度不受降雨影响，靠加湿器维持；傍晚检查水箱水位',
+    note:'清镇预报 · 车间温度与室外相关 +0.49'
+  };
+}
+
+const RULES=[
+ {id:'R-01',n:'湿度跌破下限',c:'四点均湿 < 42%',t:r=>r.mh<42,
+  m:r=>`车间湿度 ${r.mh}%，低于晾挂下限 42%。再干下去表面会过快结壳，内部水分出不来。`,
+  fix:'检查加湿器水位并补水，30 分钟后复测'},
+ {id:'R-02',n:'自动读数与实测背离',c:'自动 − 四点均湿 > 12',t:r=>(r.auto-r.mh)>12,
+  m:r=>`自动读数 ${r.auto}%，实测只有 ${r.mh}%，背离 ${(r.auto-r.mh).toFixed(1)} 个点。探头附近还湿着，车间已经干了——最常见的原因是加湿器缺水。`,
+  fix:'检查加湿器水位，并确认自动探头位置是否代表车间'},
+ {id:'R-03',n:'单日跌幅过大',c:'当日最高湿 − 当前 > 8',t:(r,c)=>(c.dayMax-r.mh)>8,
+  m:(r,c)=>`今天从 ${c.dayMax}% 掉到 ${r.mh}%，跌了 ${(c.dayMax-r.mh).toFixed(1)} 个点。不是天气能造成的幅度。`,
+  fix:'排查加湿设备与门窗密闭'},
+ {id:'R-04',n:'测点离散度异常',c:'四点湿度极差 > 12',t:r=>(Math.max(...r.H)-Math.min(...r.H))>12,
+  m:r=>`四个测点湿度差 ${(Math.max(...r.H)-Math.min(...r.H)).toFixed(0)} 个点，车间不均匀，可能有局部返潮或风路死角。`,
+  fix:'检查风机与挂架间距，必要时调整挂位'},
+ {id:'R-05',n:'入夜前补水提醒',c:'时间 ≥ 19:00 且 湿度 < 45%',t:r=>r.t>='19:00'&&r.mh<45,
+  m:r=>`入夜了，湿度 ${r.mh}%。夜里没人巡查，现在不补水，明早大概率还要低。`,
+  fix:'补满水箱后再离厂',remind:1}
+];
+function evalRec(r,all,inclRemind){
+  const same=all.filter(x=>x.d===r.d&&x.t&&x.t<=r.t);
+  const ctx={dayMax:Math.max(...same.map(v=>v.mh))};
+  return RULES.filter(x=>(inclRemind||!x.remind)&&x.t(r,ctx))
+    .map(x=>({id:x.id,n:x.n,m:x.m(r,ctx),fix:x.fix,remind:!!x.remind}));
+}
+let ANOM=[], HANDLED={};
+function buildAnom(){
+  const byDay={};
+  R.forEach((r,i)=>{ if(!r.t) return;
+    const f=evalRec(r,R); if(!f.length) return;
+    (byDay[r.d]=byDay[r.d]||[]).push({r,i,f});});
+  ANOM=Object.keys(byDay).sort().reverse().map(d=>{
+    const hits=byDay[d];
+    const rules={}; hits.forEach(h=>h.f.forEach(x=>rules[x.id]=x));
+    const ids=Object.keys(rules).sort();
+    const worst=hits.reduce((a,b)=>b.r.mh<a.r.mh?b:a);
+    const sev=(ids.includes('R-01')||ids.includes('R-02'))?'严重':'关注';
+    const dflt=OUT[d]?{note:'次日早班补水，湿度恢复至正常带'}:null;
+    return {key:d,d,sev,ids,rules:Object.values(rules),hits,worst,
+      from:hits[0].r.t,to:hits[hits.length-1].r.t,
+      idx:worst.i,handled:(d in HANDLED)?HANDLED[d]:dflt};});
+}
+buildAnom();
+const openCount=()=>ANOM.filter(a=>!a.handled).length;
+
+/* ---------- clock (demo: client time; prod: API/WebSocket) ---------- */
+const Clock={
+  now(){ return new Date(); }, // production: replace with server time from API or WebSocket
+  formatDate(d){
+    const w=['日','一','二','三','四','五','六'];
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${w[d.getDay()]}`;
+  },
+  formatTime(d){
+    return [d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+  },
+  _tickers:[],
+  _interval:null,
+  onTick(cb){
+    this._tickers.push(cb);
+    cb(this.now());
+    if(!this._interval){
+      this._interval=setInterval(()=>{
+        const t=this.now();
+        this._tickers.forEach(fn=>fn(t));
+      },1000);
+    }
+    return ()=>{ this._tickers=this._tickers.filter(f=>f!==cb); };
+  }
+};
+Clock.onTick(d=>{
+  const dateEl=$('#todo-clock-date'), timeEl=$('#todo-clock-time');
+  if(dateEl) dateEl.textContent=Clock.formatDate(d);
+  if(timeEl) timeEl.textContent=Clock.formatTime(d);
+});
+
+/* ---------- nav ---------- */
+function go(v){
+  if(v==='anomaly') v='todo';
+  $$('section').forEach(x=>x.classList.remove('on'));
+  $('#sec-'+v).classList.add('on');
+  $$('aside nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v||(v==='detail'&&b.dataset.v==='batches')));
+  $$('.mobile-nav .tab').forEach(b=>b.classList.toggle('on',b.dataset.v===v||(v==='detail'&&b.dataset.v==='batches')));
+  $('#bar-t').textContent=TITLES[v];
+  $('#mh-title').textContent=TITLES[v];
+  $('#bar-c').textContent=v==='detail'?'· QZ-2608-01':'';
+  $('#quick').textContent=v==='detail'?'补录':'登记';
+  $('#quick').style.display=v==='detail'||v==='today'?'inline-flex':'none';
+  $('#quick-m').style.display=v==='detail'||v==='today'?'inline-flex':'none';
+  $('#mfab').style.display=v==='today'&&!flowOpen&&!flowBatch?'flex':v==='detail'?'flex':'none';
+  if(v!=='today'&&(flowOpen||flowBatch)){
+    flowOpen=null; flowBatch=null; buyFilter='all';
+    $('#flow-panel').style.display='none'; $('#flow-track').style.display='none';
+    $('#flow-home').style.display='block';
+  }
+  closeFabMenu();
+  scrollTo(0,0);
+  if(v==='detail') setTimeout(drawChart,50);
+  if(v==='factory') setTimeout(()=>{ initFactory3D(); onFactoryResize(); renderFactoryWeather(); updateFactoryDateTime(); }, 80);
+  if(v==='today') renderToday();
+  if(v==='todo') renderTodo();
+  if(v==='batches') renderTable();
+  if(v==='ledger') renderLedger();
+}
+$$('aside nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+function goMobile(v){go(v);}
+$$('#dtabs button').forEach(b=>b.onclick=()=>{
+  $$('#dtabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  $$('.pane').forEach(p=>p.classList.remove('on')); $('#'+b.dataset.p).classList.add('on');
+  if(b.dataset.p==='p-ov') setTimeout(drawChart,50);
+});
+
+/* ---------- toast ---------- */
+let tt;
+function toast(msg,sub,bad){
+  const e=$('#toast');
+  e.innerHTML=msg+(sub?`<div style="color:var(--text-dim);font-size:12.5px;margin-top:4px">${sub}</div>`:'');
+  e.style.borderLeftColor=bad?'var(--alarm)':'var(--moss)';
+  e.style.opacity=1;
+  e.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(tt);
+  tt=setTimeout(()=>{e.style.opacity=0;e.style.transform='translateX(-50%) translateY(20px)';},4200);
+}
+
+/* ---------- batches ---------- */
+let flowOpen=null,flowBatch=null,buyFilter='all',actionType=null;
+const curAb=()=>openCount();
+
+let mode='all';
+let prevBadge=0;
+
+function mhStatus(mh){
+  if(mh<HUM_LOW) return {cls:'hot',text:`低于下限 ${HUM_LOW}%，规则将自动告警`,pos:(mh-HUM_MIN)/(HUM_MAX-HUM_MIN)*100};
+  if(mh<HUM_LOW+3) return {cls:'warn',text:`接近下限，留意加湿器水位`,pos:(mh-HUM_MIN)/(HUM_MAX-HUM_MIN)*100};
+  return {cls:'ok',text:'在正常带内（42–58%）· 探头持续监测中',pos:(mh-HUM_MIN)/(HUM_MAX-HUM_MIN)*100};
+}
+function batchSub(b,ab,mh){
+  if(b.real) return ab?`<span class="cell-sub warn">${ab} 项待处理</span>`:`<span class="cell-sub" style="color:var(--moss)">监测中</span>`;
+  if(b.sensor===0) return `<span class="cell-sub">未接传感器</span>`;
+  return `<span class="cell-sub">示例</span>`;
+}
+function bounceBadge(el, n){
+  if(n!==prevBadge && n>0){ el.classList.add('bounce'); setTimeout(()=>el.classList.remove('bounce'),500); }
+  prevBadge=n;
+}
+function saveRipple(){
+  const b=$('#quick')||$('#mfab');
+  if(!b) return;
+  const r=b.getBoundingClientRect();
+  const e=document.createElement('div');
+  e.className='save-ripple';
+  e.style.left=(r.left+r.width/2-24)+'px';
+  e.style.top=(r.top+r.height/2-24)+'px';
+  document.body.appendChild(e);
+  setTimeout(()=>e.remove(),650);
+}
+const tm=$('#toggle-metrics');
+if(tm) tm.onclick=()=>{
+  const f=$('#metrics-fold');
+  if(!f) return;
+  f.classList.toggle('open');
+  tm.textContent=f.classList.contains('open')?'收起读数 ▴':'更多读数 ▾';
+};
+function batchMh(b){
+  if(b.real) return last().mh;
+  if(b.stage==='prep') return null;
+  if(b.stage==='dry') return b.id==='QZ-2608-02'?52.1:48.2;
+  if(b.stage==='qc') return 47.5;
+  return null;
+}
+function rowOf(b){
+  const y=yl(b), ys=y?y.toFixed(1)+'%':'—';
+  const ab=b.real?curAb():b.ab;
+  const mh=b.real?last().mh:batchMh(b);
+  const bn=`<div style="font-family:var(--mono);font-size:13px"><span class="status-dot ${dotc(b.st)}"></span>${b.id}${b.real?'<span class="tag tag-real">实测</span>':'<span class="tag">示例</span>'}</div>`;
+  if(mode==='all') return [bn+`<div style="font-size:12px;color:var(--text-faint);margin-top:2px">${b.st}</div>`,
+    `${b.sup} ${b.inKg}斤<div style="font-size:12px;color:var(--text-faint);margin-top:2px">${b.inD} · ${b.pr}元</div>`,
+    b.st==='腌制中'?`<span style="color:var(--text-faint)">未开始晾挂</span>`:
+      mh!=null?`${b.days}天 ${mh}%<div style="font-size:12px;margin-top:2px">${batchSub(b,ab,mh)}</div>`:
+      `<span style="color:var(--text-faint)">—</span>`,
+    b.out?`${b.out} ${b.ch}<div style="font-size:12px;color:var(--text-faint);margin-top:2px">${b.outKg}斤</div>`:`<span style="color:var(--text-faint)">未出货</span>`,
+    `<span style="text-align:right;font-family:var(--mono)">${ys}</span>`];
+  if(mode==='buy') return [bn,b.sup,b.inD,`<span style="text-align:right;font-family:var(--mono)">${b.inKg} 斤</span>`,
+    `<span style="text-align:right;font-family:var(--mono)">${b.pr} 元</span>`,`<span style="text-align:right;font-family:var(--mono)">${(b.inKg*b.pr).toLocaleString()} 元</span>`];
+  if(mode==='make') return [bn,b.st,b.days?`<span style="text-align:right;font-family:var(--mono)">${b.days} 天</span>`:`<span style="color:var(--text-faint);text-align:right;font-family:var(--mono)">—</span>`,
+    mh?`<span style="text-align:right;font-family:var(--mono)">${mh}%</span>`:`<span style="color:var(--text-faint);text-align:right;font-family:var(--mono)">—</span>`,
+    ab?`<span style="text-align:right;font-family:var(--mono);color:var(--alarm)">${ab}</span>`:`<span style="color:var(--text-faint);text-align:right;font-family:var(--mono)">0</span>`,`<span style="text-align:right;font-family:var(--mono)">${ys}</span>`];
+  return [bn,b.out||`<span style="color:var(--text-faint)">—</span>`,b.ch||`<span style="color:var(--text-faint)">—</span>`,
+    b.outKg?`<span style="text-align:right;font-family:var(--mono)">${b.outKg} 斤</span>`:`<span style="color:var(--text-faint)">—</span>`,
+    `<span style="text-align:right;font-family:var(--mono)">${ys}</span>`,b.st];
+}
+function batchInDate(b){
+  if(!b.inD||b.inD==='—') return null;
+  const yr=2000+parseInt((b.id.match(/QZ-(\d{2})/)||[,'26'])[1],10);
+  const p=(b.inD+'').split('/');
+  if(p.length<2) return null;
+  const m=parseInt(p[0],10), d=parseInt(p[1],10);
+  if(!m||!d) return null;
+  return new Date(yr,m-1,d);
+}
+function getFilteredBatches(){
+  const q=$('#q')?.value.trim()||'';
+  const st=$('#fst')?.value||'';
+  const from=$('#b-from')?.value;
+  const to=$('#b-to')?.value;
+  const fromD=from?new Date(from+'T00:00:00'):null;
+  const toD=to?new Date(to+'T23:59:59'):null;
+  return B.filter(b=>{
+    if(mode==='buy'&&!['buy','rawstock'].includes(b.stage)) return false;
+    if(mode==='make'&&!['prep','dry','smoke','qc'].includes(b.stage)) return false;
+    if(mode==='sell'&&!['stock','ship'].includes(b.stage)) return false;
+    if(q && !b.id.includes(q) && !(b.sup||'').includes(q)) return false;
+    if(st && b.st!==st) return false;
+    if(fromD||toD){
+      const bd=batchInDate(b);
+      if(!bd) return false;
+      if(fromD && bd<fromD) return false;
+      if(toD && bd>toD) return false;
+    }
+    return true;
+  });
+}
+function batchStatusSummary(list){
+  const m={};
+  list.forEach(b=>{ m[b.st]=(m[b.st]||0)+1; });
+  return Object.entries(m).map(([k,v])=>`${k} <b>${v}</b> 批`).join(' · ')||'—';
+}
+function clearBatchFilters(){
+  $('#q').value=''; $('#fst').value='';
+  $('#b-from').value=''; $('#b-to').value='';
+  renderTable();
+}
+function exportBatches(){
+  const list=getFilteredBatches();
+  const hdr=['批次号','状态','环节','供应商','进货日期','进货斤数','单价','工艺天数','出库日期','出库斤数','渠道','实测'];
+  const rows=list.map(b=>[
+    b.id,b.st,b.stage,b.sup||'—',b.inD||'—',b.inKg||0,b.pr||'—',b.days||0,b.out||'—',b.outKg||'—',b.ch||'—',b.real?'是':'否'
+  ]);
+  const csv=[hdr,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const from=$('#b-from')?.value||'全部';
+  const to=$('#b-to')?.value||'全部';
+  const st=$('#fst')?.value||'全部状态';
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`山熏批次_${from}_${to}_${st}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已导出 CSV',`共 ${list.length} 批 · ${batchStatusSummary(list).replace(/<[^>]+>/g,'')}`);
+}
+function initBatchStatusFilter(){
+  const sel=$('#fst'); if(!sel) return;
+  const cur=sel.value;
+  const sts=[...new Set(B.map(b=>b.st))].sort();
+  sel.innerHTML='<option value="">全部状态</option>'+sts.map(s=>`<option${s===cur?' selected':''}>${s}</option>`).join('');
+}
+function renderTable(){
+  const list=getFilteredBatches();
+  $('#th').innerHTML='<tr>'+COLS[mode].map(c=>
+    `<th${RIGHT.includes(c)?' style="text-align:right"':''}>${c}</th>`).join('')+'</tr>';
+  $('#tb').innerHTML=list.length?list.map(b=>
+    `<tr data-id="${b.id}">`+rowOf(b).map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')
+    :`<tr><td colspan="${COLS[mode].length}" style="text-align:center;padding:40px;color:var(--text-faint)">没有匹配的批次</td></tr>`;
+  $('#cnt').textContent=`${list.length} / ${B.length} 批`;
+  const bar=$('#batch-export-bar');
+  if(bar) bar.innerHTML=`<span>筛选结果 <b>${list.length}</b> 批</span><span>${batchStatusSummary(list)}</span>`;
+  const hanging=B.filter(b=>b.st==='晾挂中').length;
+  const openAb=openCount();
+  const sensorOn=B.filter(b=>b.real||b.sensor).length;
+  $('#batch-summary').innerHTML=`<span>晾挂中 <b>${hanging}</b> 批</span><span>探头在线 <b style="color:var(--moss)">${sensorOn}</b> 批</span><span>待处理异常 <b class="${openAb?'hot':''}">${openAb}</b> 项</span>`;
+  $$('#tb tr[data-id]').forEach(tr=>tr.onclick=()=>{
+    openBatchPreview(tr.dataset.id);
+  });
+  $('#mobile-batches').innerHTML=list.map(b=>{
+    const y=yl(b), ab=b.real?curAb():b.ab, mh=b.real?last().mh:batchMh(b);
+    return `<div class="batch-card-mobile" onclick="openBatchPreview('${b.id}')"><div class="top"><span class="status-dot ${dotc(b.st)}"></span><span class="bn">${b.id}</span>${b.real?'<span class="tag tag-real">实测</span>':'<span class="tag">示例</span>'}</div><div class="info"><div>状态<span class="val">${b.st}</span></div><div>天数<span class="val">${b.days||'—'} 天</span></div><div>均湿<span class="val">${mh!=null?mh+'%':'—'}</span></div><div>异常<span class="val" style="color:${ab?'var(--alarm)':'var(--moss)'}">${ab||0}</span></div></div></div>`;
+  }).join('');
+}
+$('#q').oninput=renderTable; $('#fst').onchange=renderTable;
+$('#b-from')?.addEventListener('change',renderTable);
+$('#b-to')?.addEventListener('change',renderTable);
+$$('#seg button').forEach(b=>b.onclick=()=>{$$('#seg button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); mode=b.dataset.c; renderTable();});
+initBatchStatusFilter();
+
+/* ---------- readiness & whoop history ---------- */
+function getReadiness(){
+  const items=[];
+  const b=B.find(x=>x.id==='QZ-2608-01');
+  const live=SENSOR.live();
+  const TARGET_MH=43, TARGET_DAYS=25;
+  const days=[...new Set(R.map(r=>r.d))].sort();
+  const first=R.filter(r=>r.d===days[0]), lastD=R.filter(r=>r.d===days[days.length-1]);
+  const firstAvg=first.reduce((a,r)=>a+r.mh,0)/first.length;
+  const lastAvg=lastD.reduce((a,r)=>a+r.mh,0)/lastD.length;
+  const dropPerDay=Math.max((firstAvg-lastAvg)/(days.length-1),0.12);
+  const daysToMh=Math.ceil(Math.max(0,live.mh-TARGET_MH)/dropPerDay);
+  const daysToMin=Math.max(0,TARGET_DAYS-b.days);
+  const daysLeft=daysToMin===0?0:Math.min(daysToMh,daysToMin);
+  const estDay=29+daysLeft;
+  items.push({c:daysLeft<=3?'warn':'ok',
+    t:`QZ-2608-01 · 约 ${daysLeft||'今'} 天后可取`,
+    s:`晾挂第 ${b.days} 天 · 均湿 ${live.mh}% 缓降中 · 预计 9 月 ${estDay} 日前后达出库窗口（≤43% 且满 ${TARGET_DAYS} 天）`,
+    btn:'看进度', fn:()=>go('detail')});
+  const b3=B.find(x=>x.id==='QZ-2608-03');
+  if(b3&&b3.st==='腌制中'){
+    const pickleLeft=7-3;
+    items.push({c:pickleLeft<=2?'warn':'ok',
+      t:`QZ-2608-03 · 腌制还剩约 ${pickleLeft} 天`,
+      s:'8/26 入缸 · 满 7 天后可评估转晾挂', btn:'看批次', fn:()=>go('batches')});
+  }
+  const b2=B.find(x=>x.id==='QZ-2608-02');
+  if(b2&&b2.sensor===0){
+    items.push({c:'warn', t:'QZ-2608-02 · 未接探头',
+      s:'晾挂第 6 天但无实时数据，建议尽快安装 WiFi 传感器', btn:'看车间', fn:()=>go('factory')});
+  }
+  return items;
+}
+function renderWhoopHistory(){
+  const days=[...new Set(R.map(r=>r.d))].sort();
+  const daily=days.map(d=>{const S=R.filter(r=>r.d===d);
+    return{d,mh:S.reduce((a,r)=>a+r.mh,0)/S.length};});
+  const W=420,H=120,pad={t:14,r:10,b:24,l:10};
+  const plotW=W-pad.l-pad.r,plotH=H-pad.t-pad.b;
+  const mhMin=34,mhMax=62;
+  const X=i=>pad.l+plotW*i/(daily.length-1);
+  const Y=v=>pad.t+plotH*(1-(v-mhMin)/(mhMax-mhMin));
+  const zTop=Y(58),zBot=Y(42);
+  const pts=daily.map((r,i)=>`${X(i)},${Y(r.mh)}`).join(' ');
+  const area=`<polygon fill="url(#whg)" points="${pad.l},${pad.t+plotH} ${pts} ${X(daily.length-1)},${pad.t+plotH}"/>`;
+  const zone=`<rect x="${pad.l}" y="${zTop}" width="${plotW}" height="${zBot-zTop}" fill="#8FAB63" opacity=".14" rx="1"/>`;
+  const line=`<polyline class="chart-line-draw" fill="none" stroke="#E8B84A" stroke-width="2.5" stroke-linejoin="round" points="${pts}"/>`;
+  const last=daily.length-1;
+  const dot=`<circle cx="${X(last)}" cy="${Y(daily[last].mh)}" r="5" fill="#E8B84A" class="chart-anomaly-pop"/>
+    <text x="${X(last)}" y="${Y(daily[last].mh)-9}" text-anchor="middle" fill="#E8B84A" font-size="9" font-family="monospace">今日</text>`;
+  const labels=daily.map((r,i)=>(i%2===0||i===last)?`<text x="${X(i)}" y="${H-6}" text-anchor="middle" fill="#6E6555" font-size="8" font-family="monospace">8/${r.d.slice(3)}</text>`:'').join('');
+  const zl=`<text x="${W-pad.r}" y="${zTop+10}" text-anchor="end" fill="#8FAB63" font-size="7" opacity=".85">58%</text>
+    <text x="${W-pad.r}" y="${zBot-2}" text-anchor="end" fill="#8FAB63" font-size="7" opacity=".85">42%</text>`;
+  $('#whoop-range').textContent=`历程 ${days.length} 天 · 8/${days[0].slice(3)}–8/${days[days.length-1].slice(3)}`;
+  $('#spark').innerHTML=`<defs><linearGradient id="whg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8B84A" stop-opacity=".28"/><stop offset="100%" stop-color="#E8B84A" stop-opacity="0"/></linearGradient></defs>${zone}${area}${line}${dot}${labels}${zl}`;
+}
+
+/* ---------- today workflow ---------- */
+
+function buildTrace(b){
+  const cur=stageIdx(b.stage), p=b.purchase||{};
+  const nodes=[
+    {key:'buy',title:'采购下单',time:p.orderDate||b.inD||'—',
+     detail:`供应商 ${b.sup||'—'} · 采购人 ${p.buyer||'—'} · 计划 ${b.inKg||'—'} 斤 · ${b.pr||'—'} 元/斤`,
+     kv:[['供应商',b.sup||'—'],['采购人',p.buyer||'—'],['单价',(b.pr||'—')+' 元/斤'],['计划重量',(b.inKg||'—')+' 斤']]},
+    {key:'inspect',title:'到货验收',time:p.arriveDate||(b.buySub==='inspecting'?'验收中':'—'),
+     detail:`检疫报告 ${p.reportNo||'—'} · 结果 ${p.quarantine||'待检'} · 验收员 ${p.inspector||'—'}`,
+     kv:[['到货日',p.arriveDate||'—'],['检疫结果',p.quarantine||'待检'],['报告编号',p.reportNo||'—'],['验收员',p.inspector||'—']]},
+    {key:'rawstock',title:'入原料库',time:cur>=1?b.inD||'—':'—',
+     detail:cur>=1?`验收合格原料入库暂存 · ${b.inKg} 斤`:'待入库',kv:cur>=1?[['存放','原料库 A 区'],['重量',b.inKg+' 斤']]:[]},
+    {key:'prep',title:'预处理腌制',time:cur>=2?b.inD:'—',
+     detail:cur>=2?`修割淘洗 · 滚揉腌制 · ${b.st}`:'待转入',kv:cur>=2?[['状态',b.st],['供应商',b.sup]]:[]},
+    {key:'dry',title:'晾挂沥干',time:cur>=3?(b.real?'8/11 起':b.inD):'—',
+     detail:cur>=3?`晾挂第 ${b.days||0} 天${b.real?' · 64 条温湿度实测':''}`:'待转入',
+     kv:cur>=3?[['天数',(b.days||0)+' 天'],['均湿',b.real?last().mh+'%':'—'],['监测',b.real?'探头在线':b.sensor===0?'未接探头':'示例']]:[]},
+    {key:'smoke',title:'熏制',time:cur>=4?b.inD:'—',
+     detail:cur>=4?`柴火熏制第 ${b.days||0} 天`:'待转入',kv:[]},
+    {key:'qc',title:'成品检验',time:cur>=5?b.inD:'—',detail:cur>=5?b.st:'待转入',kv:[]},
+    {key:'stock',title:'成品入库',time:cur>=6?b.inD:'—',
+     detail:cur>=6?`${b.outKg||b.inKg} 斤在库`:'待转入',kv:[]},
+    {key:'ship',title:'出库发货',time:b.out||'—',
+     detail:b.out?`${b.outKg} 斤 · 渠道 ${b.ch}`:'待出库',kv:[]},
+  ];
+  const keyToIdx={buy:0,inspect:0,rawstock:1,prep:2,dry:3,smoke:4,qc:5,stock:6,ship:7};
+  return nodes.map(n=>{
+    const ni=keyToIdx[n.key];
+    let st='future';
+    if(b.buySub==='failed'&&n.key==='inspect') st='failed';
+    else if(b.stage==='buy'&&n.key==='buy'&&['pending','buying'].includes(b.buySub)) st='current';
+    else if(b.stage==='buy'&&n.key==='inspect'&&b.buySub==='inspecting') st='current';
+    else if(b.stage==='buy'&&n.key==='buy'&&['inspecting','passed','failed'].includes(b.buySub)) st='done';
+    else if(cur>ni) st='done';
+    else if(cur===ni||(b.stage==='dry'&&n.key==='dry')||(b.stage==='prep'&&n.key==='prep')) st='current';
+    if(b.stage==='ship'&&n.key==='ship') st='done';
+    return {...n,st};
+  });
+}
+
+function openFlowPanel(id){
+  flowOpen=id; flowBatch=null; buyFilter='all';
+  $('#flow-home').style.display='none';
+  $('#flow-panel').style.display='block';
+  $('#flow-track').style.display='none';
+  $('#mfab').style.display='none';
+  const wf=WORKFLOW.find(w=>w.id===id);
+  $('#flow-title').textContent=wf.label;
+  $('#flow-sub').textContent=wf.sub;
+  $('#flow-ico').innerHTML=`<img src="${wf.img}" alt="${wf.label}">`;
+  renderFlowBatches(id);
+}
+function closeFlowPanel(){
+  flowOpen=null; flowBatch=null; buyFilter='all';
+  $('#flow-panel').style.display='none';
+  $('#flow-track').style.display='none';
+  $('#flow-home').style.display='block';
+  $('#mfab').style.display='flex';
+  renderToday();
+}
+function setBuyFilter(f){
+  buyFilter=f;
+  renderFlowBatches(flowOpen);
+}
+function openBatchTrack(id){
+  const b=batchById(id); if(!b) return;
+  flowBatch=id;
+  $('#flow-panel').style.display='none';
+  $('#flow-track').style.display='block';
+  $('#track-title').textContent=b.id;
+  $('#track-sub').textContent=`${b.sup} · ${b.inKg} 斤 · ${b.st}${b.real?'<span class="tag tag-real">实测</span>':''}`;
+  renderBatchTrack(id);
+}
+function closeBatchTrack(){
+  flowBatch=null;
+  $('#flow-track').style.display='none';
+  $('#flow-panel').style.display='block';
+  renderFlowBatches(flowOpen);
+}
+function openBatchPreview(id){
+  const b=batchById(id); if(!b) return;
+  const wf=WORKFLOW.find(w=>w.id===b.stage);
+  const mh=b.real?last().mh:batchMh(b);
+  const y=yl(b), ys=y?y.toFixed(1)+'%':'—';
+  const ab=b.real?curAb():b.ab;
+  const nodes=buildTrace(b).filter(n=>n.st!=='future').slice(-4);
+  $('#batch-preview-title').textContent=b.id+(b.real?' · 实测':'');
+  $('#batch-preview-content').innerHTML=`
+    <div class="zone-preview-hero">
+      <span class="zp-ico"><img src="${wf?.img||'assets/flow/buy.png'}" alt="" class="ic-ico-xl"></span>
+      <div class="zp-main">
+        <div class="zp-title">${b.sup||'—'} · ${b.inKg||0} 斤</div>
+        <div class="zp-sub">${STAGE_LABEL[b.stage]||b.stage} · ${b.st}${b.buySub?` · ${BUY_SUB_LABEL[b.buySub]}`:''}</div>
+      </div>
+      <div class="zp-stat"><div class="sk">工艺天数</div><div class="sv">${b.days||0} 天</div></div>
+    </div>
+    <div class="batch-preview-kv">
+      <div><b>进货日</b><span>${b.inD||'—'}</span></div>
+      <div><b>单价</b><span>${b.pr||'—'} 元/斤</span></div>
+      <div><b>均湿</b><span>${mh!=null?mh+'%':'—'}</span></div>
+      <div><b>得率</b><span>${ys}</span></div>
+      <div><b>待处理异常</b><span style="color:${ab?'var(--alarm)':'var(--moss)'}">${ab||0}</span></div>
+      <div><b>出库</b><span>${b.out?b.out+' · '+b.ch:'未出货'}</span></div>
+    </div>
+    ${(b.stage==='stock'||b.stage==='ship')?`<div class="batch-preview-qr">
+      <div style="font-size:12px;color:var(--faint);margin-bottom:8px">包装溯源码 · 扫码查看批次故事</div>
+      <div class="ship-qr-box" id="batch-preview-qr"></div>
+      <div class="ship-qr-url" id="batch-preview-qr-url"></div>
+    </div>`:''}
+    <div class="batch-preview-timeline">
+      <div style="font-size:12px;color:var(--faint);margin-bottom:8px">工艺进度</div>
+      ${nodes.map(n=>`<div class="batch-preview-node ${n.st}">
+        <div class="bp-time">${n.time}</div><div class="bp-title">${n.title}</div>
+        <div style="color:var(--dim);line-height:1.5">${n.detail}</div></div>`).join('')}
+    </div>`;
+  const footer=$('#batch-preview-footer');
+  const traceTok=b.traceToken||getTraceTokenForBatch(b.id)||((b.stage==='stock'||b.stage==='ship')?TraceAPI.batchToken(b.id):null);
+  const traceBtn=traceTok?`<button class="btn btn-ghost" onclick="window.open('${TraceAPI.getTraceUrl(traceTok)}','_blank')">打开溯源页</button>`:'';
+  footer.innerHTML=`<button class="btn btn-ghost" onclick="closeBatchPreview()">关闭</button>${traceBtn}`+
+    (b.real?`<button class="btn btn-primary" onclick="closeBatchPreview();go('detail')">查看完整监测详情</button>`:
+      `<button class="btn btn-primary" onclick="closeBatchPreview();go('today');openFlowPanel('${b.stage}');openBatchTrack('${b.id}')">在今日流程中操作</button>`);
+  $('#batch-preview-mask').classList.add('on');
+  if(traceTok){
+    const url=TraceAPI.getTraceUrl(traceTok);
+    const urlEl=$('#batch-preview-qr-url');
+    if(urlEl) urlEl.textContent=url;
+    renderQrToElement('#batch-preview-qr',url,140);
+  }
+}
+function closeBatchPreview(){ $('#batch-preview-mask')?.classList.remove('on'); }
+function closeBatchPreviewMask(e){ if(e.target.id==='batch-preview-mask') closeBatchPreview(); }
+function zoneBatchItemHtml(b, extra=''){
+  const tag=b.st+(b.days?` · ${b.days}天`:'');
+  return `<div class="zone-batch-item clickable" onclick="closeZonePreview();openBatchPreview('${b.id}')">
+    <span><b>${b.id}</b> · ${b.sup} · ${b.inKg} 斤${extra}</span><span>${tag}</span></div>`;
+}
+function toggleTrackNode(el){ el.closest('.track-node').classList.toggle('open'); }
+
+function renderBatchTrack(id){
+  const b=batchById(id); if(!b) return;
+  const nodes=buildTrace(b);
+  const wf=WORKFLOW.find(w=>w.id===b.stage);
+  let actions='';
+  if(b.stage==='rawstock'&&b.buySub==='passed')
+    actions=`<button class="btn btn-primary" onclick="advanceBatch('${id}','prep')">确认转入预处理</button>`;
+  if(b.stage==='dry'&&b.dryReady)
+    actions=`<button class="btn btn-primary" onclick="advanceBatch('${id}','smoke')">确认转入熏制</button>`;
+  if(b.stage==='dry'&&!b.dryReady)
+    actions=`<span style="font-size:13px;color:var(--faint)">晾挂未满期，暂不可转熏制</span>`;
+  if(b.real&&b.stage==='dry')
+    actions+=` <button class="btn btn-ghost" onclick="go('detail')">查看晾挂监测</button>`;
+  if(b.stage==='buy'&&b.buySub==='inspecting')
+    actions=`<button class="btn btn-primary" onclick="advanceBuySub('${id}','passed')">验收合格 → 入原料库</button>
+      <button class="btn btn-ghost" style="color:var(--alarm)" onclick="advanceBuySub('${id}','failed')">不合格 · 退货隔离</button>`;
+  if(b.stage==='buy'&&b.buySub==='buying')
+    actions=`<button class="btn btn-primary" onclick="advanceBuySub('${id}','inspecting')">标记到货 · 开始验收</button>`;
+
+  $('#track-content').innerHTML=`
+    <div class="track-hero">
+      <div><div class="th-id">${b.id}${b.real?'<span class="tag tag-real">实测</span>':''}</div>
+        <div class="th-meta">${b.sup} · ${b.inKg} 斤 · ${STAGE_LABEL[b.stage]||b.st}
+          ${b.buySub?`<span class="buy-badge ${b.buySub}">${BUY_SUB_LABEL[b.buySub]}</span>`:''}</div></div>
+      <div class="th-stat"><div class="sk">当前环节</div><div class="sv">${wf?wf.label:b.st}</div></div>
+    </div>
+    <div class="track-timeline">${nodes.map(n=>{
+      const tag=n.st==='done'?'ok':n.st==='current'?'cur':n.st==='failed'?'wait':'wait';
+      const tagT=n.st==='done'?'已完成':n.st==='current'?'进行中':n.st==='failed'?'不合格':'待发生';
+      const kv=n.kv&&n.kv.length?`<div class="track-kv">${n.kv.map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('')}</div>`:'';
+      return `<div class="track-node ${n.st}" onclick="toggleTrackNode(this)">
+        <div class="tn-dot"></div>
+        <div class="track-card"><div class="track-card-head">
+          <span class="tn-time">${n.time}</span>
+          <span class="tn-title">${n.title}</span>
+          <span class="tn-tag ${tag}">${tagT}</span>
+          <span class="tn-chev">▼</span>
+        </div><div class="track-card-body">${n.detail}${kv}</div></div>
+      </div>`;
+    }).join('')}</div>
+    ${(b.stage==='stock'||b.stage==='ship')?`<div class="track-qr-block">
+      <div style="font-size:12px;color:var(--faint);margin-bottom:8px">包装溯源码</div>
+      <div class="ship-qr-box" id="track-qr-canvas"></div>
+      <div class="ship-qr-url" id="track-qr-url"></div>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="window.open('${TraceAPI.getTraceUrl(b.traceToken||TraceAPI.batchToken(b.id))}','_blank')">打开溯源页</button>
+    </div>`:''}
+    ${actions?`<div class="track-actions">${actions}</div>`:''}`;
+  $$('#track-content .track-node.current').forEach(n=>n.classList.add('open'));
+  if(b.stage==='stock'||b.stage==='ship'){
+    const tok=b.traceToken||TraceAPI.batchToken(b.id);
+    const url=TraceAPI.getTraceUrl(tok);
+    const urlEl=$('#track-qr-url');
+    if(urlEl) urlEl.textContent=url;
+    renderQrToElement('#track-qr-canvas',url,140);
+  }
+}
+
+function advanceBuySub(id,sub){
+  const b=batchById(id); if(!b) return;
+  const registrar=AUTH?.name||'—';
+  b.buySub=sub;
+  if(sub==='passed'){
+    b.stage='rawstock'; b.st='验收完成'; b.buySub='passed';
+    logBatchEvent(b,'到货验收','检疫合格',registrar);
+    logBatchEvent(b,'入原料库',b.id+' 已入原料库',registrar);
+    toast('验收完成',b.id+' 已入原料库，可手动转预处理');
+  } else if(sub==='failed'){
+    b.st='不合格';
+    logBatchEvent(b,'验收不合格','已隔离，待退货处理',registrar);
+    toast('已标记不合格',b.id+' 已隔离，待退货处理',1);
+  } else if(sub==='inspecting'){
+    b.st='验收中';
+    logBatchEvent(b,'开始验收','进入到货验收',registrar);
+    toast('开始验收',b.id+' 进入到货验收');
+  }
+  saveBatches();
+  renderBatchTrack(id); renderFlowBatches(flowOpen); renderToday();
+}
+function advanceBatch(id,toStage){
+  const b=batchById(id); if(!b) return;
+  const registrar=AUTH?.name||'—';
+  const labels={prep:'腌制中',smoke:'熏制中'};
+  if(b.stage==='rawstock'&&toStage==='prep'){
+    b.stage='prep'; b.st=labels.prep||'腌制中';
+    logBatchEvent(b,'转入预处理',b.id+' 进入腌制',registrar);
+    toast('已转预处理',b.id+' 已从原料库取出，进入腌制');
+  }
+  if(b.stage==='dry'&&toStage==='smoke'){
+    b.stage='smoke'; b.st=labels.smoke; b.dryReady=0;
+    logBatchEvent(b,'转入熏制',b.id+' 晾挂完成，进入熏房',registrar);
+    toast('已转熏制',b.id+' 晾挂完成，进入熏房');
+  }
+  saveBatches();
+  renderBatchTrack(id); renderFlowBatches(flowOpen); renderToday(); renderTable();
+}
+
+function renderFlowBatches(stageId){
+  const wf=WORKFLOW.find(w=>w.id===stageId);
+  let list=B.filter(b=>b.stage===stageId);
+  if(stageId==='buy'&&buyFilter!=='all') list=list.filter(b=>b.buySub===buyFilter);
+  $('#flow-count').textContent=list.length+' 批';
+  const ff=$('#flow-filters');
+  if(stageId==='buy'){
+    ff.style.display='flex';
+    ff.innerHTML=BUY_SUBS.map(s=>{
+      const n=s.id==='all'?B.filter(b=>b.stage==='buy').length:B.filter(b=>b.stage==='buy'&&b.buySub===s.id).length;
+      return `<button class="flow-filter${buyFilter===s.id?' on':''}" onclick="setBuyFilter('${s.id}')">${s.label}<span class="fn">${n}</span></button>`;
+    }).join('');
+  } else ff.style.display='none';
+  if(!list.length){
+    $('#flow-batches').innerHTML=`<div class="flow-empty">${wf.label}环节暂无批次</div>`;
+    return;
+  }
+  $('#flow-batches').innerHTML=list.map(b=>{
+    const mh=b.real?last().mh:batchMh(b);
+    let stat='';
+    if(b.stage==='dry'&&b.days) stat=`${b.days} 天${mh?' · '+mh+'%':''}`;
+    else if(b.stage==='ship'&&b.out) stat=`${b.out} 出货`;
+    else if(b.stage==='buy'&&b.buySub) stat=BUY_SUB_LABEL[b.buySub];
+    else if(b.stage==='rawstock') stat=`${b.inKg}斤 在库`;
+    else if(b.stage==='stock') stat=`${b.outKg||b.inKg}斤 在库`;
+    else if(b.stage==='smoke'&&b.days) stat=`熏制 ${b.days} 天`;
+    else if(b.days) stat=`${b.days} 天`;
+    else stat=b.inKg?`${b.inKg} 斤`:'—';
+    const badge=b.buySub?`<span class="buy-badge ${b.buySub}">${BUY_SUB_LABEL[b.buySub]}</span>`:'';
+    const qrTag=(b.stage==='stock'||b.stage==='ship')?'<span class="trace-qr-tag">溯源码</span>':'';
+    return `<div class="flow-batch" onclick="openBatchTrack('${b.id}')">
+      <span class="fb-ico"><img src="${wf.img}" alt=""></span>
+      <div class="fb-body">
+        <div class="fb-id">${b.id}${b.real?'<span class="tag tag-real">实测</span>':''} ${badge}${qrTag}</div>
+        <div class="fb-meta">${b.sup} · ${b.inKg} 斤 · ${b.st}</div>
+      </div>
+      <div class="fb-stat">${stat} →</div>
+    </div>`;
+  }).join('');
+}
+function renderToday(){
+  if(flowBatch){ renderBatchTrack(flowBatch); return; }
+  if(flowOpen){ renderFlowBatches(flowOpen); return; }
+  $('#flow-grid').innerHTML=WORKFLOW.map(wf=>{
+    const n=B.filter(b=>b.stage===wf.id).length;
+    return `<div class="flow-card" onclick="openFlowPanel('${wf.id}')">
+      <div class="fc-art"><img src="${wf.img}" alt="${wf.label}" loading="lazy" draggable="false"></div>
+      <div class="fc-body"><div class="fc-title">${wf.label}</div><div class="fc-sub">${wf.sub}</div></div>
+      <div class="fc-foot"><span class="fc-pend">待处理 <b class="${n?'':'zero'}">${n}</b></span><span class="fc-arr">→</span></div>
+    </div>`;
+  }).join('');
+  const active=B.filter(b=>b.stage!=='ship').length;
+  $('#n-today').textContent=active; $('#n-today').classList.toggle('zero',active===0);
+  $('#m-n-today').textContent=active; $('#m-n-today').classList.toggle('zero',active===0);
+  bounceBadge($('#n-today'), active); bounceBadge($('#m-n-today'), active);
+  const an=openCount();
+  const tc=todoCount();
+  $('#n-todo').textContent=tc; $('#n-todo').classList.toggle('zero',tc===0);
+  $('#m-n-todo').textContent=tc; $('#m-n-todo').classList.toggle('zero',tc===0);
+  bounceBadge($('#n-todo'), tc);
+}
+
+/* ---------- FAB action menu ---------- */
+let invoiceFileData=null;
+function handleInvoiceUpload(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const zone=$('#invoice-zone'), wrap=$('#invoice-preview-wrap'), hint=$('#invoice-hint');
+  if(zone) zone.classList.add('has-file');
+  if(hint) hint.textContent=f.name;
+  invoiceFileData=f;
+  if(wrap){
+    wrap.innerHTML='';
+    if(f.type.startsWith('image/')){
+      const img=document.createElement('img');
+      img.className='invoice-preview';
+      img.src=URL.createObjectURL(f);
+      wrap.appendChild(img);
+    }
+  }
+  const ai=$('#ai-parse-result');
+  if(ai){ ai.classList.add('on'); ai.textContent='AI 正在识别发票…'; }
+  setTimeout(simulateInvoiceParse,800);
+}
+function simulateInvoiceParse(){
+  const sup=$('#a-sup')?.value.trim(), kg=+($('#a-kg')?.value)||0, pr=+($('#a-pr')?.value)||18;
+  const d=new Date();
+  const invNo=`FP-2026-${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*9000)+1000)}`;
+  const amt=kg?Math.round(kg*pr):0;
+  const invEl=$('#a-invoice'), amtEl=$('#a-amt');
+  if(invEl&&!invEl.value) invEl.value=invNo;
+  if(amtEl&&!amtEl.value&&amt) amtEl.value=amt;
+  const ai=$('#ai-parse-result');
+  if(ai){
+    ai.innerHTML=`✓ AI 识别完成：发票号 <b>${invEl?.value||invNo}</b>，金额 <b>${(amtEl?.value||amt)||'—'}</b> 元${sup?' · 供应商 '+sup:''}`;
+    ai.classList.add('on');
+  }
+}
+function onFabClick(){
+  const onDetail=$('#sec-detail').classList.contains('on');
+  if(onDetail) openRec(); else toggleFabMenu();
+}
+function toggleFabMenu(){
+  const m=$('#fab-menu');
+  m.classList.toggle('on');
+  if(m.classList.contains('on')) $('#mfab').textContent='×';
+  else $('#mfab').textContent='＋';
+}
+function closeFabMenu(){
+  $('#fab-menu').classList.remove('on');
+  $('#mfab').textContent='＋';
+}
+function openActionModal(type){
+  requireAuth(()=>_openActionModal(type));
+}
+function _openActionModal(type){
+  closeFabMenu(); actionType=type;
+  const titles={buy:'登记采购',rawin:'原料入库',stock:'成品入库',ship:'登记出库',stage:'状态变更'};
+  $('#action-title').textContent=titles[type]||'登记';
+  const body=$('#action-body'), reg=registrarRowHtml();
+  if(type==='buy'){
+    invoiceFileData=null;
+    body.innerHTML=reg+`
+      <div class="invoice-zone" id="invoice-zone">
+        <input type="file" id="invoice-file" accept="image/*,.pdf" style="display:none">
+        <div id="invoice-hint">点击上传采购发票（图片 / PDF）</div>
+        <div id="invoice-preview-wrap"></div>
+      </div>
+      <div class="ai-parse-result" id="ai-parse-result"></div>
+      <div class="dev-form-row"><label>供应商</label><input id="a-sup" placeholder="如：演示供应商 B"></div>
+      <div class="dev-form-row"><label>计划重量（斤）</label><input type="number" id="a-kg" placeholder="300"></div>
+      <div class="dev-form-row"><label>单价（元/斤）</label><input type="number" id="a-pr" value="18"></div>
+      <div class="dev-form-row"><label>发票号</label><input id="a-invoice" placeholder="上传后 AI 识别或手填"></div>
+      <div class="dev-form-row"><label>金额（元）</label><input type="number" id="a-amt" placeholder="自动计算"></div>
+      <div class="dev-form-row"><label>采购人</label><select id="a-by"><option>石红英</option><option>李师傅</option><option>石武举</option></select></div>`;
+    $('#invoice-zone').onclick=()=>$('#invoice-file').click();
+    $('#invoice-file').onchange=handleInvoiceUpload;
+    const recalc=()=>{ const kg=+($('#a-kg')?.value)||0, pr=+($('#a-pr')?.value)||0; if(kg&&pr) $('#a-amt').value=Math.round(kg*pr); };
+    $('#a-kg')?.addEventListener('input',recalc);
+    $('#a-pr')?.addEventListener('input',recalc);
+  } else if(type==='rawin'){
+    const list=B.filter(b=>b.stage==='buy'&&b.buySub==='inspecting');
+    body.innerHTML=reg+`
+      <div class="dev-form-row"><label>待验批次</label>
+        <select id="a-bid">${list.length?list.map(b=>`<option value="${b.id}">${b.id} · ${b.sup} · ${b.inKg}斤</option>`).join(''):'<option value="">无待验收批次</option>'}</select></div>
+      <div class="dev-form-row"><label>检疫结果</label><select id="a-quarantine"><option>合格</option><option>待复检</option></select></div>
+      <div class="dev-form-row"><label>报告编号</label><input id="a-report" placeholder="JY-2026-…"></div>
+      <div class="dev-form-row"><label>验收员</label><select id="a-inspector"><option>徐巧益</option><option>石武举</option><option>杨明飞</option></select></div>`;
+  } else if(type==='stock'){
+    const list=B.filter(b=>b.stage==='qc');
+    body.innerHTML=reg+`
+      <div class="dev-form-row"><label>检验合格批次</label>
+        <select id="a-bid">${list.length?list.map(b=>`<option value="${b.id}">${b.id} · ${b.sup}</option>`).join(''):'<option value="">无待入库批次</option>'}</select></div>
+      <div class="dev-form-row"><label>入库重量（斤）</label><input type="number" id="a-kg" placeholder="入库称重"></div>
+      <div class="dev-form-row"><label>冷藏库位</label><select id="a-room"><option>成品冷藏①</option><option>成品冷藏②</option></select></div>`;
+  } else if(type==='ship'){
+    const list=B.filter(b=>b.stage==='stock');
+    body.innerHTML=reg+`
+      <div class="dev-form-row"><label>在库批次</label>
+        <select id="a-bid">${list.length?list.map(b=>`<option value="${b.id}">${b.id} · ${b.sup} · ${b.outKg||b.inKg}斤</option>`).join(''):'<option value="">无在库批次</option>'}</select></div>
+      <div class="dev-form-row"><label>出库重量（斤）</label><input type="number" id="a-kg" placeholder="出库称重"></div>
+      <div class="dev-form-row"><label>渠道</label><select id="a-ch"><option>集市</option><option>商超</option><option>电商</option><option>熟人</option></select></div>`;
+  } else if(type==='stage'){
+    const eligible=B.filter(b=>getStageNextOptions(b).length>0);
+    const first=eligible[0], opts=first?getStageNextOptions(first):[];
+    body.innerHTML=reg+`
+      <div class="dev-form-row"><label>批次</label>
+        <select id="a-bid" onchange="updateStageOptions()">${eligible.length?eligible.map(b=>`<option value="${b.id}">${b.id} · ${STAGE_LABEL[b.stage]} · ${b.st}</option>`).join(''):'<option value="">无可用批次</option>'}</select></div>
+      <div class="dev-form-row"><label>目标环节</label>
+        <select id="a-stage">${opts.map(o=>`<option value="${o.to}">${o.label}</option>`).join('')||'<option value="">—</option>'}</select></div>
+      <div class="dev-form-row"><label>备注</label><input id="a-note" placeholder="可选"></div>`;
+  }
+  $('#action-mask').classList.add('on');
+}
+function closeActionModal(){ $('#action-mask').classList.remove('on'); actionType=null; invoiceFileData=null; }
+function closeActionMask(e){ if(e.target.id==='action-mask') closeActionModal(); }
+function saveAction(){ requireAuth(()=>_saveAction()); }
+function _saveAction(){
+  const registrar=AUTH.name, dateStr=todayStr();
+  if(actionType==='buy'){
+    const sup=$('#a-sup').value.trim(), kg=+$('#a-kg').value, pr=+$('#a-pr').value, by=$('#a-by').value;
+    const invoice=$('#a-invoice')?.value.trim()||'', amount=+($('#a-amt')?.value)||Math.round(kg*pr);
+    if(!sup||!kg){ toast('请填写供应商和重量','',1); return; }
+    const id=genBatchId();
+    const batch={id,real:0,stage:'buy',buySub:'buying',st:'采购中',sup,inKg:kg,inD:dateStr,pr,days:0,ab:0,
+      out:null,outKg:null,ch:null,invoice,events:[],
+      purchase:{buyer:by,orderDate:dateStr,invoice}};
+    logBatchEvent(batch,'采购下单',`供应商 ${sup} · ${kg} 斤 · ${pr} 元/斤`,registrar);
+    B.unshift(batch);
+    LEDGER.unshift({date:dateStr,type:'采购',batch:id,sup,amount,invoice:invoice||'—',buyer:by,registrar});
+    saveLedger(); saveBatches();
+    closeActionModal(); saveRipple(); renderAll();
+    toast('采购已登记',`${id} · ${sup} ${kg} 斤`);
+  } else if(actionType==='rawin'){
+    const id=$('#a-bid').value;
+    const b=batchById(id);
+    if(!b){ toast('请选择待验收批次','',1); return; }
+    const quarantine=$('#a-quarantine').value, reportNo=$('#a-report').value.trim()||'—', inspector=$('#a-inspector').value;
+    b.stage='rawstock'; b.buySub='passed'; b.st='验收完成';
+    b.purchase={...b.purchase||{},quarantine,reportNo,inspector,arriveDate:dateStr};
+    logBatchEvent(b,'到货验收',`检疫 ${quarantine} · 报告 ${reportNo} · 验收员 ${inspector}`,registrar);
+    logBatchEvent(b,'入原料库',`验收合格 · ${b.inKg} 斤`,registrar);
+    saveBatches();
+    closeActionModal(); saveRipple(); renderAll();
+    toast('原料已入库',`${id} · 验收合格，已入原料库`);
+  } else if(actionType==='stock'){
+    const id=$('#a-bid').value, kg=+$('#a-kg').value, room=$('#a-room').value;
+    const b=batchById(id);
+    if(!b||!kg){ toast('请选择批次并填写重量','',1); return; }
+    b.stage='stock'; b.st='成品在库'; b.outKg=kg; b.stockRoom=room; b.stockedAt=dateStr;
+    const token=TraceAPI.batchToken(id);
+    b.traceToken=token;
+    logBatchEvent(b,'成品入库',`${kg} 斤 · ${room}`,registrar);
+    TraceAPI.generate(b,registrar,buildTraceRecord).then(()=>{
+      saveBatches();
+      closeActionModal(); saveRipple(); renderAll();
+      showTraceQr(token,'stock');
+      toast('成品已入库',`${id} · ${kg} 斤 · 包装溯源码已生成`);
+    });
+    return;
+  } else if(actionType==='ship'){
+    const id=$('#a-bid').value, kg=+$('#a-kg').value, ch=$('#a-ch').value;
+    const b=batchById(id);
+    if(!b||!kg){ toast('请选择批次并填写重量','',1); return; }
+    b.stage='ship'; b.st='已完成'; b.outKg=kg; b.out=dateStr; b.ch=ch;
+    logBatchEvent(b,'出库发货',`${kg} 斤 · ${ch}`,registrar);
+    const token=TraceAPI.batchToken(id);
+    b.traceToken=token;
+    TraceAPI.generate(b,registrar,buildTraceRecord).then(()=>{
+      saveBatches();
+      closeActionModal(); saveRipple(); renderAll();
+      toast('出库已登记',`${id} · ${kg} 斤 → ${ch} · 溯源快照已更新`);
+    });
+    return;
+  } else if(actionType==='stage'){
+    const id=$('#a-bid').value, to=$('#a-stage').value;
+    const b=batchById(id);
+    if(!b||!to){ toast('请选择批次和目标环节','',1); return; }
+    if(!applyStageTransition(b,to,registrar,$('#a-note')?.value.trim())) return;
+    saveBatches();
+    closeActionModal(); saveRipple(); renderAll();
+    toast('状态已变更',`${id} → ${STAGE_LABEL[to]||to}`);
+  }
+}
+
+/* ---------- detail ---------- */
+let logAllOpen=false;
+function logRow(r){
+  const bad=r.mh<42||(r.auto-r.mh)>12;
+  return `<tr class="${bad?'bad':''}"><td class="cell-mono">${r.t||'—'}</td>
+    <td style="text-align:right;font-family:var(--mono)">${r.mh}%</td>
+    <td style="text-align:right;font-family:var(--mono)">${r.mt}℃</td>
+    <td style="text-align:right;font-family:var(--mono)">${r.auto}%</td>
+    <td>${r.by||'—'}</td></tr>`;
+}
+function toggleDay(d){ $$(`.log-day[data-d="${d}"]`).forEach(el=>el.classList.toggle('open')); }
+function toggleAllDays(){
+  logAllOpen=!logAllOpen;
+  $$('.log-day').forEach(el=>el.classList.toggle('open',logAllOpen));
+  $('#log-toggle-all').textContent=logAllOpen?'收起全部':'展开全部日期';
+}
+function renderDetail(){
+  const l=last(), n=R.filter(r=>r.t).length, live=SENSOR.live();
+  const st=mhStatus(live.mh);
+  const dh=$('#d-h');
+  dh.innerHTML=live.mh+'<small>%</small>';
+  dh.className='big '+st.cls;
+  $('#d-t').innerHTML=live.mt+'<small style="color:var(--text-dim)">℃</small>';
+  $('#d-n').innerHTML=n+'<small style="color:var(--text-dim)"> 次</small>';
+  const ab=openCount();
+  $('#d-a').innerHTML=ab; $('#d-a').classList.toggle('hot',ab>0);
+  const mh=(R.reduce((a,b)=>a+b.mh,0)/R.length).toFixed(1);
+  $('#tl-p').textContent=`8/13–8/28 手写台账归档 · 8/29 起 WiFi 探头每 10 分钟入库 · 共 ${n} 条历史 + 实时监测`;
+  $('#tl-p-inline').textContent=`进行中 · 均湿 ${live.mh}% · 探头在线`;
+  $('#ov-r').textContent=`8月13日 – 8月${last().d.slice(3)}日`;
+  $('#tr-d').textContent='17 天'; $('#tr-n').textContent=`${n} 次`;
+  $('#tr-a').textContent=`${ANOM.length} 次，${ANOM.filter(a=>a.handled).length} 已处置`;
+  const days=[...new Set(R.map(r=>r.d))].reverse();
+  $('#log-days').innerHTML=`<div class="log-archive">8月13–28日：手写台账逐页转录（历史归档）· 8月29日起：WiFi 探头自动入库</div>`
+    +days.map(d=>{
+    const S=R.filter(r=>r.d===d);
+    const avg=(S.reduce((x,y)=>x+y.mh,0)/S.length).toFixed(1);
+    const hasWarn=S.some(r=>r.mh<42||(r.auto-r.mh)>12)||!!OUT[d];
+    const open=d===days[0]?' open':'';
+    return `<div class="log-day${open}" data-d="${d}">
+      <div class="log-day-head" onclick="toggleDay('${d}')">
+        <span class="date">8/${d.slice(3)}</span>
+        <span class="sum">${S.length} 次 · 均湿 ${avg}% · 均温 ${(S.reduce((x,y)=>x+y.mt,0)/S.length).toFixed(1)}℃</span>
+        ${hasWarn?'<span class="warn-tag">⚠</span>':''}
+        <span class="chev">▾</span>
+      </div>
+      <div class="log-day-body"><table><thead><tr><th>时间</th><th style="text-align:right">均湿</th><th style="text-align:right">均温</th><th style="text-align:right">自动</th><th>记录人</th></tr></thead>
+        <tbody>${S.slice().reverse().map(logRow).join('')}</tbody></table></div>
+    </div>`;
+  }).join('');
+  $('#log-c').textContent=`${days.length} 天 · ${n} 条`;
+  $('#log-toggle-all').onclick=toggleAllDays;
+  renderAnom();
+  const daysChron=[...days].reverse();
+  const rows=daysChron.map(d=>{const S=R.filter(r=>r.d===d);
+    const a=(S.reduce((x,y)=>x+y.mh,0)/S.length).toFixed(1);
+    const b=(S.reduce((x,y)=>x+y.mt,0)/S.length).toFixed(1);
+    return `<tr><td>8/${d.slice(3)}</td><td>${S.length}次　湿${a}%　温${b}℃${OUT[d]?'　⚠':''}</td></tr>`;}).join('');
+  const sh=`<h5>腊肉晾挂过程工艺记录单</h5>
+   <div style="color:#6E6555">批次 QZ-2608-01　贵州清镇　系统自动生成</div><div class="hr"></div>
+   <table><tr><td>产品</td><td>柴火腊肉（土猪后腿）</td></tr>
+   <tr><td>原料来源</td><td>演示供应商 B · 散养土猪 · 320 斤 · 18 元/斤</td></tr>
+   <tr><td>入缸腌制</td><td>2026-08-04</td></tr><tr><td>转入晾挂</td><td>2026-08-11</td></tr>
+   <tr><td>记录区间</td><td>2026-08-13 至 08-${last().d.slice(3)}</td></tr>
+   <tr><td>监测点位</td><td>车间四点 + 设备自动读数</td></tr>
+   <tr><td>数据来源</td><td>8/13–8/28 手写转录 + 8/29 起 WiFi 探头（每 10 分钟 /ingest）</td></tr>
+   <tr><td>设定温度</td><td>16℃</td></tr>
+   <tr><td>记录人</td><td>石武举、徐巧益、杨明飞、李佳</td></tr></table><div class="hr"></div>
+   <div style="color:#6E6555;margin-bottom:3px">逐日汇总</div><table>${rows}</table><div class="hr"></div>
+   <table><tr><td>规则触发</td><td>${ANOM.length} 次，其中 ${ANOM.filter(a=>a.handled).length} 次已处置</td></tr>
+   <tr><td>典型事件</td><td>8/18、8/24 夜间加湿器断水，次日补水恢复</td></tr>
+   <tr><td>数据完整性</td><td>过程数据不可追溯修改</td></tr></table>`;
+  $('#sheet').innerHTML=sh;
+}
+function anCard(a,showBatch,showJump){
+  const r=R[a.idx], span=a.from===a.to?a.from:`${a.from} – ${a.to}`;
+  const cls=a.sev==='严重'?'alarm':'warn';
+  const jumpBtn=showJump&&!a.handled?`<button class="todo-action-btn primary" onclick="jumpFromAnomaly('${a.key}')">查看并处理</button>`:'';
+  return `<div class="anomaly-card ${a.handled?'ok':cls}"${showJump&&!a.handled?` style="cursor:pointer" onclick="jumpFromAnomaly('${a.key}')"`:''}>
+    <div class="top"><span class="date">8月${a.d.slice(3)}日 · ${span}</span>
+      <span class="todo-sev-pill ${cls}">${a.sev}</span>
+      ${showBatch?'<span class="batch-label">QZ-2608-01</span>':''}
+      <span class="sp"></span>
+      <div class="actions">${a.handled?'<span style="font-size:12.5px;color:var(--text-faint)">已处理</span>'
+        :`<button class="todo-action-btn" data-k="${a.key}" onclick="event.stopPropagation()">标记已处理</button>${jumpBtn}`}</div></div>
+    <div class="desc">${a.rules[0].m}</div>
+    <div class="meta">${a.hits.length} 个时点 · 最低均湿 <b>${r.mh}%</b>（${r.t}）</div>
+    ${a.handled?`<div class="fix ok">已处理 · ${a.handled.note}</div>`
+      :`<div class="fix alarm">建议：${a.rules[0].fix}</div>`}</div>`;
+}
+function jumpFromAnomaly(key){
+  const a=ANOM.find(x=>x.key===key);
+  if(!a) return;
+  if(a.rules?.[0]?.m?.includes('烘房')||key==='dryer'){
+    go('factory');
+    setTimeout(()=>openZonePreview('dryroom'),120);
+    return;
+  }
+  go('detail');
+  setTimeout(()=>{
+    $$('#dtabs button').forEach(x=>x.classList.remove('on'));
+    const tab=$('#dtabs button[data-p="p-an"]');
+    if(tab) tab.classList.add('on');
+    $$('.pane').forEach(p=>p.classList.remove('on'));
+    $('#p-an')?.classList.add('on');
+  },80);
+}
+function scrollTodoSection(which){
+  const el=which==='anom'?$('#todo-anom-section'):$('#todo-workflow-section');
+  el?.scrollIntoView({behavior:'smooth',block:'start'});
+  $$('.todo-stat').forEach(s=>s.classList.remove('active'));
+  if(which==='anom') $('#todo-stat-anom-card')?.classList.add('active');
+  else $('#todo-stat-wf-card')?.classList.add('active');
+}
+function renderAnom(){
+  const open=ANOM.filter(a=>!a.handled), done=ANOM.filter(a=>a.handled);
+  const openHtml=open.length?open.map(a=>anCard(a,0,0)).join('')
+    :`<div style="padding:24px;text-align:center;color:var(--text-faint);font-size:13px">没有待处理的异常</div>`;
+  const doneHtml=done.length?`<div style="font-size:12.5px;color:var(--text-faint);margin:20px 0 12px">已处理 ${done.length} 项</div>`
+      +done.map(a=>anCard(a,0,0)).join(''):'';
+  const anlist=$('#anlist');
+  if(anlist) anlist.innerHTML=(open.length?`<div style="font-size:12.5px;color:var(--text-faint);margin:0 0 12px">待处理 ${open.length} 项</div>`+openHtml:'')
+    +doneHtml;
+  const todoOpen=$('#todo-anom-open');
+  if(todoOpen) todoOpen.innerHTML=open.length?open.map(a=>anCard(a,1,1)).join('')
+    :'<div style="padding:20px 0;text-align:center;color:var(--text-faint);font-size:13px">暂无待处理异常</div>';
+  const todoAnom=$('#todo-anom');
+  if(todoAnom) todoAnom.innerHTML=doneHtml;
+  $$('[data-k]').forEach(b=>b.onclick=()=>{
+    HANDLED[b.dataset.k]={note:'由 石红英 于 8月29日 标记处理'};
+    buildAnom(); renderAll(); toast('已标记处理','该事件已写入批次异常记录，导出台账时一并带出');});
+}
+
+/* ---------- todo page ---------- */
+function getWorkflowTodos(){
+  const items=[];
+  getReadiness().forEach(it=>{
+    items.push({cls:it.c, title:it.t, desc:it.s, btn:it.btn, fn:it.fn});
+  });
+  B.forEach(b=>{
+    if(b.buySub==='inspecting'){
+      items.push({cls:'warn', title:`${b.id} · 验收待完成`,
+        desc:`${b.sup} ${b.inKg} 斤已到厂，检疫报告待录入`, btn:'查看批次',
+        fn:()=>openBatchPreview(b.id)});
+    }
+    if(b.stage==='rawstock'&&b.buySub==='passed'){
+      items.push({cls:'ok', title:`${b.id} · 可转腌制`,
+        desc:`验收合格 ${b.inKg} 斤在原料库，待安排入缸`, btn:'查看批次',
+        fn:()=>openBatchPreview(b.id)});
+    }
+    if(b.dryReady&&b.stage==='dry'){
+      items.push({cls:'warn', title:`${b.id} · 已达转熏条件`,
+        desc:`晾挂第 ${b.days} 天，均湿达标，可安排转熏制`, btn:'查看批次',
+        fn:()=>b.real?go('detail'):openBatchPreview(b.id)});
+    }
+  });
+  if(typeof hasDryerAnomaly==='function'&&hasDryerAnomaly()){
+    items.push({cls:'alarm', title:'烘房 1# · 湿度过低',
+      desc:'设备异常，建议检查加湿系统', btn:'查看车间', fn:()=>{ go('factory'); setTimeout(()=>openZonePreview('dryroom'),120); }});
+  }
+  return items;
+}
+function todoCount(){ return openCount()+getWorkflowTodos().length; }
+function renderTodo(){
+  const todos=getWorkflowTodos(), anOpen=openCount();
+  $('#todo-stat-anom').textContent=anOpen;
+  $('#todo-stat-workflow').textContent=todos.length;
+  $('#todo-stat-total').textContent=anOpen+todos.length;
+  const wfEl=$('#todo-workflow');
+  if(todos.length){
+    wfEl.innerHTML=todos.map((it,i)=>`
+      <div class="todo-item ${it.cls}" style="animation-delay:${i*.05}s">
+        <div class="dot"></div>
+        <div class="body"><div class="title">${it.title}</div><div class="desc">${it.desc}</div></div>
+        <div class="action"><button class="todo-action-btn primary" data-ti="${i}">${it.btn}</button></div>
+      </div>`).join('');
+    wfEl.querySelectorAll('[data-ti]').forEach(btn=>{
+      btn.onclick=()=>todos[+btn.dataset.ti].fn();
+    });
+  } else {
+    wfEl.innerHTML='<div class="todo-empty">暂无流程待办</div>';
+  }
+  renderAnom();
+  const tc=todoCount();
+  $('#n-todo').textContent=tc; $('#n-todo').classList.toggle('zero',tc===0);
+  $('#m-n-todo').textContent=tc; $('#m-n-todo').classList.toggle('zero',tc===0);
+  bounceBadge($('#n-todo'), tc);
+}
+
+/* ---------- chart ---------- */
+function drawChart(){
+  const W=860,H=300,L=48,Rr=48,T=16,B2=44,pw=W-L-Rr,ph=H-T-B2;
+  const days=[...new Set(R.map(r=>r.d))];
+  const x=i=>L+pw*i/(R.length-1), hy=v=>T+ph-(v-34)/32*ph, ty=v=>T+ph-(v-11)/12*ph;
+  let s='';
+  days.forEach(d=>{ if(!RAIN[d])return;
+    const ix=R.map((r,i)=>r.d===d?i:-1).filter(i=>i>=0);
+    const a=x(Math.max(0,ix[0]-.5)),b=x(Math.min(R.length-1,ix[ix.length-1]+.5));
+    s+=`<rect x="${a}" y="${T}" width="${b-a}" height="${ph}" fill="#8AAFC4" opacity="${RAIN[d]===2?.35:.18}" rx="2"/>`;});
+  [40,45,50,55,60].forEach(v=>s+=`<line x1="${L}" y1="${hy(v)}" x2="${W-Rr}" y2="${hy(v)}" stroke="var(--border)" stroke-dasharray="3 3"/>
+    <text x="${L-10}" y="${hy(v)+4}" fill="var(--text-faint)" font-size="11" text-anchor="end" font-family="var(--mono)">${v}</text>`);
+  s+=`<line x1="${L}" y1="${hy(42)}" x2="${W-Rr}" y2="${hy(42)}" stroke="var(--alarm)" stroke-dasharray="4 4" opacity=".6"/>
+      <text x="${W-Rr+6}" y="${hy(42)+4}" fill="var(--alarm)" font-size="11" font-family="var(--mono)">下限42</text>`;
+  s+=`<line x1="${L}" y1="${ty(16)}" x2="${W-Rr}" y2="${ty(16)}" stroke="var(--text-faint)" stroke-dasharray="3 4" opacity=".5"/>
+      <text x="${W-Rr+6}" y="${ty(16)+4}" fill="var(--text-faint)" font-size="11" font-family="var(--mono)">16℃</text>`;
+  days.forEach(d=>{const i=R.findIndex(r=>r.d===d);
+    s+=`<text x="${x(i)}" y="${H-B2+20}" fill="var(--text-faint)" font-size="11" text-anchor="middle" font-family="var(--mono)">${d.slice(3)}</text>`;});
+  s+=`<polyline fill="none" stroke="var(--brine)" stroke-width="1.5" opacity=".85" stroke-linecap="round" points="${R.map((r,i)=>x(i)+','+ty(r.mt)).join(' ')}"/>`;
+  s+=`<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E8B84A" stop-opacity=".12"/><stop offset="100%" stop-color="#E8B84A" stop-opacity="0"/></linearGradient></defs>`;
+  s+=`<polygon fill="url(#cg)" points="${L},${T+ph} ${R.map((r,i)=>x(i)+','+hy(r.mh)).join(' ')} ${x(R.length-1)},${T+ph}"/>`;
+  s+=`<polyline class="chart-line-draw" fill="none" stroke="#E8B84A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="${R.map((r,i)=>x(i)+','+hy(r.mh)).join(' ')}"/>`;
+  ANOM.forEach((a,ni)=>{ const i=a.idx, r=R[i], up=i<R.length*.55;
+    s+=`<circle class="chart-anomaly-pop" style="animation-delay:${.8+ni*.08}s" cx="${x(i)}" cy="${hy(r.mh)}" r="5" fill="${a.handled?'var(--moss)':'var(--alarm)'}"/>`;
+    if(OUT[r.d]===r.t) s+=`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${T+ph}" stroke="var(--alarm)" stroke-dasharray="2 3" opacity=".55"/>
+      <text class="chart-anomaly-pop" style="animation-delay:${.9+ni*.08}s" x="${x(i)+(up?8:-8)}" y="${hy(r.mh)+20}" fill="var(--alarm)" font-size="10.5"
+        text-anchor="${up?'start':'end'}" font-family="var(--mono)">断水 ${r.mh}%</text>`;});
+  R.forEach((r,i)=>s+=`<circle cx="${x(i)}" cy="${hy(r.mh)}" r="8" fill="transparent" class="hp" data-i="${i}"/>`);
+  $('#chart').innerHTML=s;
+}
+function tellStory(){
+  go('detail');
+  $$('#dtabs button').forEach(x=>x.classList.remove('on'));
+  $$('#dtabs button')[0].classList.add('on');
+  $$('.pane').forEach(p=>p.classList.remove('on'));
+  $('#p-ov').classList.add('on');
+  setTimeout(()=>{
+    drawChart();
+    const idx=R.findIndex(r=>r.d==='08-24'&&r.t==='20:41');
+    if(idx<0) return;
+    toast('8月24日断水事故','当晚 20:41 四点均湿跌至 39.5%，次日早班补水后恢复',1);
+    const hp=$$('.hp')[idx];
+    if(hp) hp.dispatchEvent(new MouseEvent('mousemove',{clientX:innerWidth/2,clientY:innerHeight/2,bubbles:true}));
+  },200);
+}
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{
+  const t=e.target; if(!t.classList||!t.classList.contains('hp')){tip.style.opacity=0;return;}
+  const r=R[+t.dataset.i];
+  tip.innerHTML=`8月${r.d.slice(3)}日 ${r.t||'—'}　<b>湿 ${r.mh}%</b>　温 ${r.mt}℃<br>自动 ${r.auto}%　室外 ${r.out??'—'}℃　${r.wx}${r.by?'　'+r.by:''}`;
+  tip.style.left=Math.min(e.clientX+14,innerWidth-250)+'px'; tip.style.top=(e.clientY-52)+'px'; tip.style.opacity=1;});
+
+/* ---------- 录入 ---------- */
+function openRec(){
+  const l=last();
+  ['t1','t2','t3','t4'].forEach((k,i)=>$('#'+k).value=l.T[i]);
+  ['h1','h2','h3','h4'].forEach((k,i)=>$('#'+k).value=l.H[i]);
+  $('#fa').value=l.auto; $('#fo').value=l.out??22;
+  $('#ftm').value='09:20'; $('#err').textContent='';
+  $('#mask').classList.add('on'); updatePre(); $('#t1').focus();
+}
+function closeRec(){ $('#mask').classList.remove('on'); }
+function closeMask(event){ if(event.target.id==='mask') closeRec(); }
+function readForm(){
+  const T=['t1','t2','t3','t4'].map(k=>parseFloat($('#'+k).value));
+  const H=['h1','h2','h3','h4'].map(k=>parseFloat($('#'+k).value));
+  return {T,H,auto:parseFloat($('#fa').value),out:parseFloat($('#fo').value),
+    t:$('#ftm').value,by:$('#fby').value};
+}
+function updatePre(){
+  const f=readForm();
+  const pre=$('#pre');
+  if(f.H.some(isNaN)||f.T.some(isNaN)){pre.innerHTML='<span class="mut">填完四个测点后显示预判</span>';pre.className='pre';return;}
+  const mh=+(f.H.reduce((a,b)=>a+b,0)/4).toFixed(2), mt=+(f.T.reduce((a,b)=>a+b,0)/4).toFixed(2);
+  const draft={d:'08-29',t:f.t||'09:20',T:f.T,H:f.H,mh,mt,auto:f.auto,out:f.out};
+  const all=R.concat([draft]);
+  const fired=evalRec(draft,all), rem=evalRec(draft,all,1).filter(x=>x.remind);
+  pre.innerHTML=`四点均湿 <b>${mh}%</b>　均温 <b>${mt}℃</b>　自动−人工 <b>${(f.auto-mh).toFixed(1)}</b>`
+   +(fired.length?`<br>保存后将记为异常 ${fired.map(x=>x.id).join(' / ')}`
+     :rem.length?`<br>提醒：${rem[0].n}`
+     :`<br>各项在正常带内`);
+  pre.className='pre '+(fired.length?'alarm':rem.length?'warn':'ok');
+}
+$$('.modal-body input,.modal-body select').forEach(e=>e.addEventListener('input',updatePre));
+function saveRec(){
+  const f=readForm();
+  if(f.T.some(isNaN)||f.H.some(isNaN)){
+    $('#err').textContent='四个测点的温度和湿度都要填。'; return;}
+  if(f.H.some(v=>v<0||v>100)){$('#err').textContent='湿度应在 0–100 之间。';return;}
+  if(!f.t){$('#err').textContent='请填写记录时间。';return;}
+  $('#err').textContent='';
+  const mh=+(f.H.reduce((a,b)=>a+b,0)/4).toFixed(2), mt=+(f.T.reduce((a,b)=>a+b,0)/4).toFixed(2);
+  const rec={d:'08-29',t:f.t,day:18,T:f.T,H:f.H,mh,mt,auto:f.auto,out:f.out,by:f.by,
+    wx:'阵雨',note:'手工补录',src:'manual'};
+  R.push(rec); RAIN['08-29']=1;
+  SENSOR.lastSyncMin=0;
+  const fired=evalRec(rec,R), rem=evalRec(rec,R,1).filter(x=>x.remind);
+  buildAnom(); closeRec(); saveRipple(); renderAll();
+  if(!fired.length&&rem.length){toast('补录已保存 · '+rem[0].n,rem[0].m);return;}
+  if(fired.length) toast(`补录已保存 · 触发 ${fired.map(x=>x.id).join(' / ')}`,fired[0].m,1);
+  else toast('补录已保存','四点均湿 '+mh+'%，已写入监测记录');
+}
+$('#quick').onclick=()=>{
+  const onDetail=$('#sec-detail').classList.contains('on');
+  if(onDetail) openRec(); else toggleFabMenu();
+};
+$('#quick-m').onclick=()=>{
+  const onDetail=$('#sec-detail').classList.contains('on');
+  if(onDetail) openRec(); else toggleFabMenu();
+};
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if($('#fab-menu').classList.contains('on')) closeFabMenu();
+  else if($('#action-mask').classList.contains('on')) closeActionModal();
+  else if($('#trace-qr-mask')?.classList.contains('on')) closeTraceQr();
+  else if($('#batch-preview-mask')?.classList.contains('on')) closeBatchPreview();
+  else if($('#zone-preview-mask').classList.contains('on')) closeZonePreview();
+  else if($('#dev-detail-mask').classList.contains('on')) closeDevDetail();
+  else if($('#dev-mask').classList.contains('on')) closeDevEdit();
+  else if($('#login-mask').classList.contains('on')) closeLogin();
+  else if($('#mask').classList.contains('on')) closeRec();
+});
+$('#login-pass')?.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+
+/* ---------- qr ---------- */
+(function(){const sd=[0,1,1,0,1,0,0,1,1,0,1];let h='';
+ for(let y=0;y<11;y++)for(let x=0;x<11;x++){
+  const c=(x<3&&y<3)||(x>7&&y<3)||(x<3&&y>7);
+  const on=c?((x===0||x===2||y===0||y===2)||(x===1&&y===1)):((sd[x]^sd[y]^((x*y)%3===0?1:0))===1);
+  h+=`<i class="${on?'':'o'}"></i>`;}
+ $('#qr').innerHTML=h;})();
+
+function renderAll(){ renderToday(); renderTable(); renderDetail(); renderTodo(); renderLedger(); drawChart(); }
+
+/* ---------- auth ---------- */
+const USERS={'石红英':{pass:'1234',role:'负责人'},'李师傅':{pass:'1234',role:'维护'}};
+let AUTH=null,devEditId=null;
+function loadAuth(){try{AUTH=JSON.parse(sessionStorage.getItem('sx_auth'));}catch{AUTH=null;}}
+function updateAuthUI(){
+  const name=AUTH?AUTH.name:'未登录', role=AUTH?AUTH.role+' · 已登录':'点击登录 · 登记设备';
+  const av=name!=='未登录'?name[0]:'?';
+  ['m','d'].forEach(s=>{
+    const n=$('#acct-name-'+s),r=$('#acct-role-'+s),a=$('#acct-av-'+s);
+    if(n)n.textContent=name;
+    if(r)r.textContent=AUTH?role+' · 退出':'点击登录 · 登记设备';
+    if(a)a.textContent=av;
+  });
+  renderDevicePanel();
+}
+function openLogin(){
+  if(AUTH){ if(confirm('退出 '+AUTH.name+'？')){ AUTH=null; sessionStorage.removeItem('sx_auth'); updateAuthUI(); toast('已退出'); } return; }
+  $('#login-err').textContent=''; $('#login-pass').value='';
+  $('#login-mask').classList.add('on');
+  setTimeout(()=>$('#login-pass').focus(),80);
+}
+function closeLogin(){ $('#login-mask').classList.remove('on'); }
+function closeLoginMask(e){ if(e.target.id==='login-mask') closeLogin(); }
+function doLogin(){
+  const name=$('#login-user').value, pass=$('#login-pass').value.trim();
+  if(!USERS[name]||USERS[name].pass!==pass){ $('#login-err').textContent='姓名或密码不对'; return; }
+  AUTH={name,role:USERS[name].role}; sessionStorage.setItem('sx_auth',JSON.stringify(AUTH));
+  closeLogin(); updateAuthUI(); toast('欢迎，'+name,'现在可以登记设备状态了');
+}
+function requireAuth(fn){ if(!AUTH){ openLogin(); return; } fn(); }
+
+/* ---------- factory 3D (CAD traced) ---------- */
+const ICONS={raw:'assets/icons/icon-raw.png',pickle:'assets/icons/icon-pickle.png',hang:'assets/icons/icon-hang.png',
+  dryer:'assets/icons/icon-dryer.png',humidifier:'assets/icons/icon-humidifier.png',ac:'assets/icons/icon-ac.png',
+  stock:'assets/icons/icon-stock.png',aging:'assets/icons/icon-aging.png',sensor:'assets/icons/icon-sensor.png'};
+function ic(name,cls='ic-ico'){return `<img class="${cls}" src="${ICONS[name]}" alt="" width="32" height="32" loading="lazy" decoding="async">`;}
+const DEVICE_CATS={
+  sensor:{label:'测温点',icon:'sensor',color:0xE8B84A,filter:'other'},
+  humidifier:{label:'加湿器',icon:'humidifier',color:0x6FA8A0,filter:'humidifier'},
+  ac:{label:'空调',icon:'ac',color:0x6B9FD4,filter:'ac'},
+  dryer:{label:'烘房',icon:'dryer',color:0xDE5A46,filter:'dryer'},
+};
+const DEV_FILTER_CATS=[
+  {key:'all',label:'全部'},{key:'dryer',label:'烘房'},{key:'humidifier',label:'加湿器'},
+  {key:'ac',label:'空调'},{key:'other',label:'其他'},
+];
+function defaultDevices(){
+  const live=SENSOR.live();
+  return [
+    {id:'T1',cat:'sensor',label:'测点 1#',x:32,z:20,on:1,sum:`${live.mh}% · ${live.mt}℃`,
+      run:{电量:'87%',信号:'良好'},maint:{上次:'8/12',维护人:'石红英',内容:'校准湿度'},arch:{序列号:'SH-2608-001',购买:'2026-03',厂商:'山熏物联'}},
+    {id:'T2',cat:'sensor',label:'测点 2#',x:38,z:22,on:1,sum:`${(live.mh-0.7).toFixed(1)}% · ${(live.mt+0.3).toFixed(1)}℃`,
+      run:{电量:'82%',信号:'良好'},maint:{上次:'8/12',维护人:'石红英',内容:'更换电池'},arch:{序列号:'SH-2608-002',购买:'2026-03',厂商:'山熏物联'}},
+    {id:'T3',cat:'sensor',label:'测点 3#',x:44,z:20,on:1,sum:`${(live.mh+0.6).toFixed(1)}% · ${(live.mt-0.2).toFixed(1)}℃`,
+      run:{电量:'91%',信号:'良好'},maint:{上次:'8/12',维护人:'石红英',内容:'—'},arch:{序列号:'SH-2608-003',购买:'2026-03',厂商:'山熏物联'}},
+    {id:'T4',cat:'sensor',label:'测点 4#',x:50,z:22,on:1,sum:`${(live.mh-0.3).toFixed(1)}% · ${(live.mt+0.5).toFixed(1)}℃`,
+      run:{电量:'76%',信号:'良好'},maint:{上次:'8/12',维护人:'石红英',内容:'—'},arch:{序列号:'SH-2608-004',购买:'2026-03',厂商:'山熏物联'}},
+    {id:'H1',cat:'humidifier',label:'加湿器 1#',x:36,z:17,on:1,sum:'62% · 自动',
+      run:{水量:'62%',模式:'自动'},maint:{上次:'8/12',维护人:'李师傅',内容:'清洗水箱'},arch:{序列号:'JS-2603-011',购买:'2026-03',厂商:'美的工业'}},
+    {id:'H2',cat:'humidifier',label:'加湿器 2#',x:48,z:17,on:1,sum:'45% · 自动',
+      run:{水量:'45%',模式:'自动'},maint:{上次:'8/12',维护人:'李师傅',内容:'补水'},arch:{序列号:'JS-2603-012',购买:'2026-03',厂商:'美的工业'}},
+    {id:'AC1',cat:'ac',label:'空调 1#',x:54,z:24,on:1,sum:'托管 · 16℃',
+      run:{模式:'托管',设定:'16℃'},maint:{上次:'7/28',维护人:'外协',内容:'清洗滤网'},arch:{序列号:'KT-2601-031',购买:'2026-01',厂商:'格力'}},
+    {id:'AC2',cat:'ac',label:'空调 2#',x:28,z:28,on:0,sum:'手动 · 关',
+      run:{模式:'手动',设定:'关'},maint:{上次:'7/28',维护人:'外协',内容:'—'},arch:{序列号:'KT-2601-032',购买:'2026-01',厂商:'格力'}},
+    {id:'DRY1',cat:'dryer',label:'烘房 1#',x:58,z:34,on:1,anomaly:1,sum:'42.3℃ · 28% 湿度',
+      run:{状态:'运行',温度:'42.3℃',湿度:'28%'},maint:{上次:'8/20',维护人:'李师傅',内容:'检查加热管'},arch:{序列号:'HF-2606-001',购买:'2026-06',厂商:'山熏定制'}},
+    {id:'DRY2',cat:'dryer',label:'烘房 2#',x:66,z:34,on:0,sum:'空闲 · 可用',
+      run:{状态:'空闲',温度:'—'},maint:{上次:'—',维护人:'—',内容:'—'},arch:{序列号:'HF-2606-002',购买:'2026-06',厂商:'山熏定制'}},
+  ];
+}
+function loadDevices(){
+  const defs=defaultDevices();
+  try{
+    const o=JSON.parse(localStorage.getItem('sx_devices')||'{}');
+    return defs.map(d=>{ const p=o[d.id]; if(!p) return d;
+      return {...d,...p,run:{...d.run,...p.run},maint:{...d.maint,...p.maint},arch:{...d.arch,...p.arch}}; });
+  }catch{ return defs; }
+}
+const FACTORY={
+  rooms:[
+    {id:'pickle',label:'腌制车间',x:22,z:30,w:30,d:12,h:5,type:'pickle',main:1},
+    {id:'hang',label:'晾挂车间',x:26,z:16,w:34,d:12,h:5,type:'hang',active:1,batch:'QZ-2608-01',status:'晾挂第17天',main:1},
+    {id:'dryroom',label:'烘房',x:54,z:30,w:14,d:12,h:5,type:'dryer',main:1},
+    {id:'pack',label:'内包车间',x:28,z:2,w:30,d:12,h:5,type:'pack',main:1},
+    {id:'form',label:'成型',x:2,z:32,w:12,d:10,h:4,type:'work'},
+    {id:'cold1',label:'成品冷藏①',x:98,z:34,w:10,d:7,h:4,type:'cold'},
+    {id:'cold2',label:'成品冷藏②',x:98,z:24,w:10,d:7,h:4,type:'cold'},
+    {id:'raw',label:'原料库',x:4,z:2,w:20,d:10,h:4,type:'storage',main:1},
+    {id:'disinfect',label:'消杀间',x:2,z:22,w:8,d:6,h:4,type:'service'},
+    {id:'change',label:'更衣室',x:2,z:14,w:8,d:6,h:4,type:'service'},
+    {id:'machine',label:'机房',x:72,z:14,w:8,d:8,h:4,type:'service'},
+    ...Array.from({length:11},(_,i)=>({id:`ch-r${i+1}`,label:`熟化${15+i}`,x:100,z:4+i*3.3,w:4.2,d:2.8,h:3.5,type:'chamber',active:i<1})),
+    ...Array.from({length:9},(_,i)=>({id:`ch-b${i+1}`,label:`熟化${i+1}`,x:72+i*4.2,z:2,w:3.8,d:2.8,h:3.5,type:'chamber'})),
+  ],
+  devices:loadDevices(),
+};
+const FACTORY_BUILD_VER=7;
+let factoryInited=false,factoryScene,factoryRenderer,factoryCamera,factoryAnim,factoryTipEl;
+let factoryDeviceMarkers=[],factoryDeviceFilters=new Set(['sensor','humidifier','ac','dryer']);
+let factorySelectedDev=null,factoryResizeObs=null,factoryResizeRaf=0;
+let factoryPanelTab='devices',factoryListFilter='all';
+function devFilterCat(d){ return d.cat==='sensor'?'other':d.cat; }
+function hasDryerAnomaly(){ return FACTORY?.devices?.some(d=>d.cat==='dryer'&&d.anomaly)||false; }
+function toastOtherBldg(n){ toast(n+'号厂房','演示中仅开放 4 号厂房'); }
+function scrollToDevicePanel(){
+  setFactoryPanelTab('devices');
+  $('#device-panel')?.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function updateFactoryDateTime(){
+  const el=$('#factory-dt'); if(!el) return;
+  el.textContent='2026-08-29 14:20';
+}
+function renderFactoryWeather(){
+  const el=$('#factory-weather'); if(!el) return;
+  const live=SENSOR.live();
+  const wx=FORECAST.wx==='阵雨'?'多云':FORECAST.wx;
+  el.innerHTML=`<b>清镇 · ${wx}</b><br>${Math.round(live.out||26)}°C · 湿度 ${Math.round(live.mh)}%`;
+}
+function setFactoryPanelTab(tab){ factoryPanelTab=tab; renderDevicePanel(); }
+function setDevFilter(cat){
+  factoryListFilter=cat;
+  if(cat==='all') factoryDeviceFilters=new Set(['sensor','humidifier','ac','dryer']);
+  else if(cat==='other') factoryDeviceFilters=new Set(['sensor']);
+  else factoryDeviceFilters=new Set([cat]);
+  renderDevicePanel(); updateFactoryDeviceView();
+}
+function devFilterCount(key){
+  if(key==='all') return FACTORY.devices.length;
+  return FACTORY.devices.filter(d=>devFilterCat(d)===key).length;
+}
+function getDevCardStatus(d){
+  if(d.anomaly) return {dot:'alarm',text:'湿度过低',badge:'异常',badgeCls:'alarm',alarm:1};
+  if(d.on) return {dot:'run',text:d.cat==='dryer'?(d.run?.状态||'运行中'):'运行中',badge:'运行中',badgeCls:'run'};
+  if(d.cat==='ac') return {dot:'stby',text:'待机',badge:'待机',badgeCls:'off'};
+  if(d.cat==='dryer') return {dot:'idle',text:'空闲可用',badge:'空闲',badgeCls:'off'};
+  return {dot:'off',text:'关闭',badge:'关闭',badgeCls:'off'};
+}
+function getDevMetrics(d){
+  const live=SENSOR.live();
+  if(d.cat==='sensor') return `<span>温度 ${live.mt}℃</span><span>湿度 ${live.mh}%</span>`;
+  if(d.cat==='dryer'){
+    const t=d.run?.温度||'—', h=d.run?.湿度||'';
+    return `<span>温度 ${t}</span>${h?`<span>湿度 ${h}</span>`:''}`;
+  }
+  if(d.cat==='humidifier') return `<span>水量 ${d.run?.水量||d.sum.split('·')[0]?.trim()||'—'}</span>`;
+  if(d.cat==='ac') return `<span>设定 ${d.run?.设定||'—'}</span>`;
+  return `<span>${d.sum}</span>`;
+}
+function saveDevicePatch(id,patch){
+  const o=JSON.parse(localStorage.getItem('sx_devices')||'{}');
+  o[id]={...(o[id]||{}),...patch,updatedBy:AUTH?.name,updatedAt:'8/29'};
+  localStorage.setItem('sx_devices',JSON.stringify(o));
+  const d=FACTORY.devices.find(x=>x.id===id);
+  if(d){ Object.assign(d,patch); if(patch.run) Object.assign(d.run,patch.run); if(patch.maint) Object.assign(d.maint,patch.maint); }
+  updateFactoryDeviceView(); renderDevicePanel(); renderFactoryCards();
+}
+function toggleDevFilter(cat){ setDevFilter(factoryListFilter===cat?'all':cat); }
+function selectDevice(id){
+  factorySelectedDev=id;
+  renderDevicePanel();
+  openDevDetail(id);
+}
+function openDevDetail(id){
+  const d=FACTORY.devices.find(x=>x.id===id); if(!d) return;
+  factorySelectedDev=id;
+  const cat=DEVICE_CATS[d.cat];
+  $('#dev-detail-title').textContent=cat.label+' · '+d.label;
+  const live=d.cat==='sensor'?SENSOR.live():null;
+  const statVal=live?`${live.mt}℃ / ${live.mh}%`:d.sum;
+  const statLabel=d.cat==='sensor'?'实时读数':'当前状态';
+  const runKv=Object.entries(d.run).map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('');
+  const archKv=Object.entries(d.arch).map(([k,v])=>`<div><b>${k}</b>${v}</div>`).join('');
+  const photoLabel=d.cat==='sensor'?'探头现场':d.cat==='humidifier'?'设备照片':d.cat==='ac'?'外机照片':'设备照片';
+  const timeline=`<div class="dev-detail-timeline">
+    <div class="dev-detail-node"><div class="dn-dot"></div><div class="dn-card"><b>最近维护 · ${d.maint.上次}</b>维护人：${d.maint.维护人}<br>内容：${d.maint.内容}</div></div>
+    <div class="dev-detail-node"><div class="dn-dot" style="background:var(--edge2);box-shadow:0 0 0 2px var(--edge2)"></div><div class="dn-card"><b>档案登记</b>序列号 ${d.arch.序列号} · ${d.arch.厂商}<br>购买日期 ${d.arch.购买}</div></div>
+  </div>`;
+  $('#dev-detail-content').innerHTML=`
+    <div class="dev-detail-hero">
+      <div class="dev-detail-photo">${ic(cat.icon,'ic-ico-xl')}<span style="font-size:10px;display:block;margin-top:6px;color:var(--faint)">${photoLabel}</span></div>
+      <div class="dh-main">
+        <div class="dh-id">${d.label}</div>
+        <div class="dh-meta">${cat.label} · 序列号 ${d.arch.序列号}<br>位置：4号厂房 · ${d.on?'在线运行':'已关闭'}</div>
+      </div>
+      <div class="dh-stat"><div class="sk">${statLabel}</div><div class="sv">${statVal}</div></div>
+    </div>
+    <div class="dev-detail-body">
+      <div class="dev-info-card"><h5>运行参数</h5><div class="dkv">${runKv}</div></div>
+      <div class="dev-info-card"><h5>设备档案</h5><div class="dkv">${archKv}</div></div>
+    </div>
+    <div class="dev-info-card" style="margin-top:14px"><h5>🔧 维护记录</h5>${timeline}</div>
+    ${!AUTH?'<div class="login-hint" style="margin-top:14px;margin-bottom:0">登录后可登记、修改设备状态。演示账号：石红英 / 1234</div>':''}`;
+  const editBtn=$('#dev-detail-edit-btn');
+  editBtn.textContent=AUTH?'登记修改':'登录后登记';
+  editBtn.onclick=()=>requireAuth(()=>{ closeDevDetail(); openDevEdit(id); });
+  $('#dev-detail-mask').classList.add('on');
+}
+function openDevEditFromDetail(){
+  if(!factorySelectedDev) return;
+  requireAuth(()=>{ closeDevDetail(); openDevEdit(factorySelectedDev); });
+}
+function closeDevDetail(){ $('#dev-detail-mask').classList.remove('on'); }
+function closeDevDetailMask(e){ if(e.target.id==='dev-detail-mask') closeDevDetail(); }
+function openDevEdit(id){
+  requireAuth(()=>{
+    devEditId=id; const d=FACTORY.devices.find(x=>x.id===id); if(!d) return;
+    $('#dev-edit-title').textContent='登记 · '+d.label;
+    let fields='';
+    fields+=`<div class="dev-form-row"><label>运行状态</label><select id="de-on" class="form-input"><option value="1" ${d.on?'selected':''}>运行 / 在线</option><option value="0" ${!d.on?'selected':''}>关闭 / 离线</option></select></div>`;
+    fields+=`<div class="dev-form-row"><label>状态摘要（列表显示）</label><input id="de-sum" class="form-input" value="${d.sum}"></div>`;
+    if(d.cat==='humidifier') fields+=`<div class="dev-form-row"><label>水量 %</label><input type="number" id="de-water" class="form-input" value="${parseInt(d.run.水量)||0}"></div>`;
+    if(d.cat==='ac') fields+=`<div class="dev-form-row"><label>模式</label><select id="de-mode" class="form-input"><option ${d.run.模式==='托管'?'selected':''}>托管</option><option ${d.run.模式==='手动'?'selected':''}>手动</option></select></div>
+      <div class="dev-form-row"><label>设定温度</label><input id="de-temp" class="form-input" value="${d.run.设定||'24℃'}"></div>`;
+    if(d.cat==='dryer') fields+=`<div class="dev-form-row"><label>烘房状态</label><select id="de-dryst" class="form-input"><option ${d.run.状态==='空闲'?'selected':''}>空闲</option><option ${d.run.状态==='运行'?'selected':''}>运行</option><option ${d.run.状态==='预热'?'selected':''}>预热</option></select></div>`;
+    fields+=`<div class="dev-form-row"><label>维护内容</label><input id="de-fix" class="form-input" value="${d.maint.内容}"></div>`;
+    fields+=`<div class="dev-form-row"><label>维护人</label><input id="de-fixer" class="form-input" value="${d.maint.维护人}"></div>`;
+    $('#dev-edit-body').innerHTML=fields;
+    $('#dev-mask').classList.add('on');
+  });
+}
+function closeDevEdit(){ $('#dev-mask').classList.remove('on'); devEditId=null; }
+function closeDevMask(e){ if(e.target.id==='dev-mask') closeDevEdit(); }
+function saveDevEdit(){
+  if(!devEditId||!AUTH) return;
+  const d=FACTORY.devices.find(x=>x.id===devEditId), patch={on:+$('#de-on').value,sum:$('#de-sum').value.trim()};
+  patch.maint={内容:$('#de-fix').value.trim(),维护人:$('#de-fixer').value.trim(),上次:'8/29'};
+  if(d.cat==='humidifier'){ const w=$('#de-water').value; patch.run={水量:w+'%',模式:'自动'}; patch.sum=`水量 ${w}% · 自动`; }
+  if(d.cat==='ac'){ const m=$('#de-mode').value,t=$('#de-temp').value; patch.run={模式:m,设定:t}; patch.sum=m==='托管'?`托管 · ${t}`:`手动 · ${t}`; }
+  if(d.cat==='dryer'){ const s=$('#de-dryst').value; patch.run={状态:s,温度:s==='运行'?'65℃':'—'}; patch.sum=s==='空闲'?'空闲 · 未启用':`${s} · ${patch.run.温度}`; }
+  saveDevicePatch(devEditId,patch);
+  closeDevEdit(); toast('已保存',d.label+' · 登记人 '+AUTH.name);
+}
+function updateFactoryDeviceView(){
+  if(!factoryDeviceMarkers.length) return;
+  factoryDeviceMarkers.forEach(({group,core,glow,ring,light,dev})=>{
+    const on=factoryDeviceFilters.has(dev.cat);
+    const col=DEVICE_CATS[dev.cat].color;
+    const active=on&&(dev.on||dev.cat==='sensor');
+    const c=dev.anomaly?0xDE5A46:(active?col:(dev.on?0xAAAAAA:0x888888));
+    if(core&&core.material) core.material.opacity=active?1:0.2;
+    if(glow&&glow.material){ glow.material.color.setHex(c); glow.material.opacity=active?0.85:0.12; }
+    if(ring&&ring.material){ ring.material.color.setHex(c); ring.material.opacity=active?0.5:0.08; }
+    if(light) light.intensity=active?(dev.on?1.2:0.4):0;
+    if(light) light.color.setHex(c);
+    group.visible=true;
+  });
+}
+/* ---------- smart temp control (zones) ---------- */
+const ZONE_TEMP_PROFILES={
+  hang:{tBase:16,tRange:6,hBase:46,hRange:14,tSet:16},
+  pickle:{tBase:13,tRange:3,hBase:58,hRange:8,tSet:14},
+  dryroom:{tBase:42,tRange:8,hBase:28,hRange:8,tSet:45},
+};
+function detRand(i,s){const v=Math.sin(i*12.9898+s*78.233)*43758.5453;return v-Math.floor(v);}
+function genZoneMonthSeries(zoneId){
+  const p=ZONE_TEMP_PROFILES[zoneId]; if(!p) return [];
+  const rMap={};
+  [...new Set(R.map(r=>r.d))].forEach(d=>{
+    const S=R.filter(r=>r.d===d);
+    rMap[d]={t:+(S.reduce((a,r)=>a+r.mt,0)/S.length).toFixed(1),h:+(S.reduce((a,r)=>a+r.mh,0)/S.length).toFixed(1)};
+  });
+  const out=[];
+  for(let i=29;i>=0;i--){
+    const dt=new Date(2026,7,29-i);
+    const md=`${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    if(zoneId==='hang'&&rMap[md]) out.push({d:md.slice(3),...rMap[md],real:1});
+    else{
+      const w=Math.sin(i*.42+zoneId.length)*.7;
+      const t=+(p.tBase+w*(p.tRange/2)+(detRand(i,1)-.5)*1.2).toFixed(1);
+      const h=+(p.hBase+w*(p.hRange/3)+(detRand(i,2)-.5)*2).toFixed(1);
+      out.push({d:md.slice(3),t,h,real:0});
+    }
+  }
+  return out;
+}
+function renderDualSpark(series,opts){
+  const W=opts.w||280,H=opts.h||72;
+  const tMin=opts.tMin??Math.min(...series.map(r=>r.t))-1;
+  const tMax=opts.tMax??Math.max(...series.map(r=>r.t))+1;
+  const hMin=opts.hMin??Math.min(...series.map(r=>r.h))-2;
+  const hMax=opts.hMax??Math.max(...series.map(r=>r.h))+2;
+  const pad={l:2,r:2,t:6,b:14},plotW=W-pad.l-pad.r,plotH=H-pad.t-pad.b;
+  const X=i=>pad.l+plotW*i/(series.length-1);
+  const TY=v=>pad.t+plotH*(1-(v-tMin)/(tMax-tMin||1));
+  const HY=v=>pad.t+plotH*(1-(v-hMin)/(hMax-hMin||1));
+  const tPts=series.map((r,i)=>`${X(i)},${TY(r.t)}`).join(' ');
+  const hPts=series.map((r,i)=>`${X(i)},${HY(r.h)}`).join(' ');
+  return `<svg class="st-spark" viewBox="0 0 ${W} ${H}" aria-hidden="true">
+    <polyline fill="none" stroke="#6B8FAB" stroke-width="1.5" opacity=".85" points="${tPts}"/>
+    <polyline fill="none" stroke="#E8B84A" stroke-width="1.5" opacity=".85" points="${hPts}"/>
+    <text x="${pad.l}" y="${H-2}" fill="var(--faint)" font-size="8" font-family="monospace">30天</text>
+    <text x="${W-pad.r}" y="${H-2}" text-anchor="end" fill="#6B8FAB" font-size="8">温/湿</text></svg>`;
+}
+function smartTempHtml(zoneId){
+  const p=ZONE_TEMP_PROFILES[zoneId]; if(!p) return '';
+  const series=genZoneMonthSeries(zoneId);
+  const live=series[series.length-1];
+  const wa=weatherAdvisory();
+  const devIds=zoneId==='hang'?['AC1','H1','H2']:zoneId==='pickle'?['AC2','H1']:zoneId==='dryroom'?['DRY1']:[];
+  const devs=devIds.map(id=>FACTORY.devices.find(d=>d.id===id)).filter(Boolean);
+  const devCards=devs.map(d=>{
+    const cat=DEVICE_CATS[d.cat], st=getDevCardStatus(d);
+    return `<div class="st-dev-card" onclick="closeZonePreview();selectDevice('${d.id}')">
+      <span>${ic(cat.icon)}</span><div><b>${d.label}</b><span>${d.sum}</span></div>
+      <em class="zdr-badge ${st.badgeCls}">${st.badge}</em></div>`;
+  }).join('');
+  const sparkOpts=zoneId==='dryroom'?{tMin:35,tMax:55,hMin:18,hMax:42}:{tMin:11,tMax:22,hMin:36,hMax:64};
+  const realNote=series.filter(r=>r.real).length?`含 ${series.filter(r=>r.real).length} 天实测数据`:'演示趋势数据';
+  return `<div class="zone-section smart-temp"><h5>智能温控</h5>
+    <div class="st-now"><div><b>${live.t}℃</b><span>当前温度</span></div>
+      <div><b>${live.h}%</b><span>当前湿度</span></div>
+      <div><b>${p.tSet}℃</b><span>设定温度</span></div></div>
+    ${renderDualSpark(series,sparkOpts)}
+    <div class="st-legend"><span><i style="background:#6B8FAB"></i>温度 ℃</span>
+      <span><i style="background:#E8B84A"></i>湿度 %</span><span>${realNote}</span></div>
+    <div class="st-devs">${devCards}</div>
+    ${zoneId==='hang'?`<div class="st-hint">${wa.ac} · ${wa.hum}</div>`:''}
+    ${zoneId==='dryroom'&&hasDryerAnomaly()?`<div class="st-hint" style="color:var(--alarm);background:rgba(201,69,50,.08)">烘房湿度偏低，建议检查加湿系统</div>`:''}
+  </div>`;
+}
+function renderWarehousePanel(){
+  const bRaw=B.filter(x=>['rawstock','buy'].includes(x.stage));
+  const bStock=B.filter(x=>x.stage==='stock');
+  const dryAlarm=hasDryerAnomaly();
+  return `<div class="dev-panel-scroll">
+    <div class="dp-stat-grid">
+      <div class="dp-stat"><div class="k">原料库</div><div class="v">12.5<small>吨</small></div><div class="s">使用率 62%</div></div>
+      <div class="dp-stat"><div class="k">成品库</div><div class="v">3,240<small>件</small></div><div class="s">可用 22%</div></div>
+      <div class="dp-stat"><div class="k">在库批次</div><div class="v">${bRaw.length+bStock.length}</div><div class="s">原料 ${bRaw.length} · 成品 ${bStock.length}</div></div>
+    </div>
+    ${dryAlarm?'<div class="dp-alert alarm">⚠ 烘房 1# 湿度过低 · 建议检查加湿系统</div>':'<div class="dp-alert ok">库区运行正常 · 无库存告警</div>'}
+    <div class="dp-section"><h5>库区导航</h5>
+      <button type="button" class="dp-zone-link" onclick="openZonePreview('raw')"><b>原材料库</b><span>12.5 吨 · 62%</span></button>
+      <button type="button" class="dp-zone-link" onclick="openZonePreview('stock')"><b>成品冷藏</b><span>78% · ${bStock.length} 批</span></button>
+      <button type="button" class="dp-zone-link" onclick="openZonePreview('pickle')"><b>腌制车间</b><span>${B.filter(x=>x.stage==='prep').length} 批在制</span></button>
+      <button type="button" class="dp-zone-link" onclick="openZonePreview('hang')"><b>晾挂车间</b><span>${B.filter(x=>x.stage==='dry').length} 批在挂</span></button>
+      <button type="button" class="dp-zone-link" onclick="openZonePreview('dryroom')"><b>烘房 ①</b><span>${dryAlarm?'异常':'运行中'}</span></button>
+    </div>
+    <div class="dp-section"><h5>近期出入库</h5><div class="dp-mini-list">
+      <div><span>8/29</span><span>QZ-2608-09 到货 · 验收中</span></div>
+      <div><span>8/25</span><span>QZ-2608-07 原料入库 260 斤</span></div>
+      <div><span>7/09</span><span>QZ-2607-04 成品入库 300 斤</span></div>
+    </div></div>
+    <div class="dp-section"><h5>快捷操作</h5>
+      <button type="button" class="btn btn-ghost btn-sm" style="margin-right:6px" onclick="openActionModal('rawin')">原料入库</button>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="openActionModal('stock')">成品入库</button>
+    </div></div>`;
+}
+function renderEnvPanel(){
+  const live=SENSOR.live(), wa=weatherAdvisory();
+  const acs=FACTORY.devices.filter(d=>d.cat==='ac');
+  const hums=FACTORY.devices.filter(d=>d.cat==='humidifier');
+  const sensors=FACTORY.devices.filter(d=>d.cat==='sensor');
+  const anOpen=openCount();
+  const zones=[
+    {id:'hang',label:'晾挂车间',t:live.mt,h:live.mh},
+    {id:'pickle',label:'腌制车间',t:'13.2',h:'56'},
+    {id:'dryroom',label:'烘房 ①',t:'42.3',h:'28'},
+    {id:'stock',label:'成品冷藏',t:'4',h:'65'},
+  ];
+  return `<div class="dev-panel-scroll">
+    <div class="dp-stat-grid">
+      <div class="dp-stat"><div class="k">车间均温</div><div class="v">${live.mt}<small>℃</small></div></div>
+      <div class="dp-stat"><div class="k">车间均湿</div><div class="v">${live.mh}<small>%</small></div></div>
+      <div class="dp-stat"><div class="k">室外</div><div class="v">${live.out||26}<small>℃</small></div><div class="s">${FORECAST.wx}</div></div>
+    </div>
+    ${anOpen?`<div class="dp-alert alarm">⚠ ${anOpen} 项环境异常待处理 · <a href="#" onclick="go('todo');return false" style="color:inherit">查看代办</a></div>`:`<div class="dp-alert ok">${wa.title} · ${wa.note}</div>`}
+    <div class="dp-section"><h5>分区环境</h5><div class="dp-env-zones">
+      ${zones.map(z=>`<button type="button" class="dp-env-row" style="width:100%;border:0;cursor:pointer;text-align:left" onclick="openZonePreview('${z.id}')">
+        <b>${z.label}</b><em>${z.t}℃ · ${z.h}%</em><span style="color:var(--faint)">›</span></button>`).join('')}
+    </div></div>
+    <div class="dp-section"><h5>温控设备</h5><div class="dp-mini-list">
+      <div><span>空调</span><span>${acs.filter(d=>d.on).length}/${acs.length} 运行 · 设定 ${acs.find(d=>d.on)?.run?.设定||'16℃'}</span></div>
+      <div><span>加湿器</span><span>${hums.filter(d=>d.on).length}/${hums.length} 运行${hums.some(d=>d.anomaly)?' · <b style="color:var(--alarm)">有异常</b>':''}</span></div>
+      <div><span>探头</span><span>${sensors.length} 点在线 · ${SENSOR.intervalMin} 分钟同步</span></div>
+    </div></div>
+    <div class="dp-section"><h5>预报建议</h5>
+      <div class="st-hint" style="margin:0">${wa.ac}<br>${wa.hum}</div>
+    </div></div>`;
+}
+function zoneDevRowHtml(d){
+  const cat=DEVICE_CATS[d.cat];
+  const st=getDevCardStatus(d);
+  return `<div class="zone-dev-row" onclick="closeZonePreview();selectDevice('${d.id}')">
+    <span class="zdr-ico">${ic(cat.icon)}</span>
+    <div class="zdr-main"><div class="zdr-name">${d.label}</div><div class="zdr-sum">${d.sum}</div></div>
+    <span class="zdr-badge ${st.badgeCls}">${st.badge}</span></div>`;
+}
+function zoneDevicesHtml(ids){
+  if(!ids?.length) return '';
+  const devs=ids.map(id=>FACTORY.devices.find(x=>x.id===id)).filter(Boolean);
+  if(!devs.length) return '';
+  return `<div class="zone-section"><h5>关联设备</h5><div class="zone-dev-list">${devs.map(zoneDevRowHtml).join('')}</div></div>`;
+}
+function zoneCapBar(pct,label){
+  return `<div class="zone-cap-bar" title="${label}"><i style="width:${pct}%"></i></div>
+    <div style="font-size:11px;color:var(--faint);margin-top:4px">${label}</div>`;
+}
+function openZonePreview(zoneId){
+  FACTORY.devices=loadDevices();
+  const live=SENSOR.live();
+  const b1=B.find(x=>x.id==='QZ-2608-01');
+  const b3=B.find(x=>x.id==='QZ-2608-03');
+  const bStock=B.filter(x=>x.stage==='stock');
+  const bRaw=B.filter(x=>x.stage==='rawstock');
+  const dry1=FACTORY.devices.find(d=>d.id==='DRY1');
+  const dry2=FACTORY.devices.find(d=>d.id==='DRY2');
+  let icon='',title='',sub='',statKey='',statVal='',body='';
+  if(zoneId==='raw'){
+    icon='raw'; title='原材料库'; sub='4号厂房 · 验收合格原料暂存区';
+    statKey='当前库存'; statVal='12.5 吨';
+    body=`<div class="zone-section"><h5>库容</h5>
+      ${zoneCapBar(62,'已用 12.5 吨 / 总容量 20 吨 · 剩余 38%')}
+      <div style="margin-top:10px;font-size:12.5px;color:var(--text-dim);line-height:1.6">
+        托盘位 8 / 12 · 最近入库 8/25 · 验收单 DEMO-QC</div></div>
+      <div class="zone-section"><h5>在库批次</h5><div class="zone-batch-list">
+        ${bRaw.map(b=>`<div class="zone-batch-item"><span><b>${b.id}</b> · ${b.sup} · ${b.inKg} 斤</span><span>${b.st}</span></div>`).join('')}
+        <div class="zone-batch-item"><span><b>散料</b> · 食盐/香辛料</span><span>常备</span></div>
+      </div></div>
+      <div class="zone-section"><h5>环境</h5>
+        <div class="dev-info-card"><div class="dkv">
+          <div><b>室温</b>${live.out||26}℃（室外参考）</div>
+          <div><b>通风</b>自然通风 · 防潮垫完好</div>
+        </div></div></div>`;
+  }else if(zoneId==='pickle'){
+    const bPrep=B.filter(x=>x.stage==='prep');
+    icon='pickle'; title='腌制车间'; sub='4号厂房 · 腌制缸区';
+    statKey='在制批次'; statVal=`${bPrep.length} 批`;
+    body=`<div class="zone-section"><h5>在制批次</h5><div class="zone-batch-list">
+      ${bPrep.length?bPrep.map(b=>zoneBatchItemHtml(b)).join(''):'<div class="zone-batch-item"><span>暂无在制批次</span><span>—</span></div>'}
+    </div></div>
+    <div class="zone-section"><h5>腌制缸概况</h5>
+      <div class="dev-info-card"><div class="dkv">
+        <div><b>可用缸数</b>6 口 · 在用 ${Math.min(bPrep.length+2,6)} 口</div>
+        <div><b>盐水浓度</b>18% · 温度 12–15℃</div>
+        <div><b>最近出缸</b>${b3?`约 ${7-(b3.days||3)} 天后`:'—'}</div>
+      </div>    </div></div>
+    ${smartTempHtml('pickle')}
+    ${zoneDevicesHtml(['H1','H2','AC2'])}`;
+  }else if(zoneId==='hang'){
+    const bDry=B.filter(x=>x.stage==='dry');
+    icon='hang'; title='晾挂车间'; sub='4号厂房 · 主晾挂区';
+    statKey='在挂批次'; statVal=`${bDry.length} 批`;
+    body=`<div class="zone-section"><h5>在挂批次</h5><div class="zone-batch-list">
+      ${bDry.length?bDry.map(b=>zoneBatchItemHtml(b, b.real?' · 四测点在线':b.sensor===0?' · 未接探头':'')).join('')
+        :'<div class="zone-batch-item"><span>暂无在挂批次</span><span>—</span></div>'}
+    </div></div>
+    ${smartTempHtml('hang')}
+    ${zoneDevicesHtml(['T1','T2','T3','T4','H1','H2','AC1'])}`;
+  }else if(zoneId==='dryroom'){
+    const st=getDevCardStatus(dry1||{});
+    icon='dryer'; title='烘房 ①'; sub='4号厂房 · 烘干设备区';
+    statKey='当前状态'; statVal=st.badge;
+    body=`<div class="zone-section"><h5>烘房运行</h5>
+      <div class="dev-info-card"><div class="dkv">
+        <div><b>运行状态</b>${dry1?.run?.状态||'运行'}</div>
+        <div><b>温度</b>${dry1?.run?.温度||'—'}</div>
+        <div><b>湿度</b>${dry1?.run?.湿度||'—'}</div>
+        ${dry1?.anomaly?'<div style="color:var(--alarm)"><b>异常</b>湿度过低 · 建议检查加湿</div>':''}
+      </div></div></div>
+    ${smartTempHtml('dryroom')}
+    ${zoneDevicesHtml(['DRY1'])}`;
+  }else if(zoneId==='dryroom2'){
+    icon='dryer'; title='烘房 ②'; sub='4号厂房 · 备用烘干';
+    statKey='当前状态'; statVal='空闲可用';
+    body=`<div class="zone-section"><h5>烘房运行</h5>
+      <div class="dev-info-card"><div class="dkv">
+        <div><b>运行状态</b>${dry2?.run?.状态||'空闲'}</div>
+        <div><b>温度</b>${dry2?.run?.温度||'—'}</div>
+        <div><b>备注</b>可承接 QZ-2608-01 转烘</div>
+      </div></div></div>
+    ${zoneDevicesHtml(['DRY2'])}`;
+  }else if(zoneId==='stock'){
+    const ac1=FACTORY.devices.find(d=>d.id==='AC1');
+    const ac2=FACTORY.devices.find(d=>d.id==='AC2');
+    icon='stock'; title='成品冷藏'; sub='4号厂房 · 成品冷藏①②';
+    statKey='库容占用'; statVal='78%';
+    body=`<div class="zone-section"><h5>库容</h5>
+      ${zoneCapBar(78,'已存 3,240 件 / 总容量 5,000 件 · 可用 22%')}
+      <div style="margin-top:10px;font-size:12.5px;color:var(--text-dim)">成品冷藏① · 成品冷藏② · 最近入库 7/09</div></div>
+    <div class="zone-section"><h5>在库批次</h5><div class="zone-batch-list">
+      ${bStock.map(b=>`<div class="zone-batch-item"><span><b>${b.id}</b> · ${b.inKg} 斤入 · 在库 ${b.days} 天</span><span>${b.st}</span></div>`).join('')}
+    </div></div>
+    <div class="zone-section"><h5>温控设备</h5><div class="zone-dev-list">
+      ${[ac1,ac2].filter(Boolean).map(d=>{
+        const st=getDevCardStatus(d);
+        return `<div class="zone-dev-row" onclick="closeZonePreview();selectDevice('${d.id}')">
+          <span class="zdr-ico">${ic('ac')}</span>
+          <div class="zdr-main"><div class="zdr-name">${d.label}</div>
+            <div class="zdr-sum">${d.run?.模式||'—'} · 设定 ${d.run?.设定||'—'}</div></div>
+          <span class="zdr-badge ${st.badgeCls}">${st.badge}</span></div>`;
+      }).join('')}
+    </div></div>`;
+  }else if(zoneId==='aging'){
+    const activeCh=FACTORY.rooms.filter(r=>r.type==='chamber'&&r.active).length;
+    icon='aging'; title='熟化间'; sub='4号厂房 · 熟化 1–9 + 15–25 号';
+    statKey='在用间数'; statVal=`${activeCh||1} / 20`;
+    body=`<div class="zone-section"><h5>熟化概况</h5>
+      <div class="dev-info-card"><div class="dkv">
+        <div><b>底排</b>熟化 1–9 号 · 9 间</div>
+        <div><b>右侧</b>熟化 15–25 号 · 11 间</div>
+        <div><b>环境</b>静置熟化 · 常温避光</div>
+        <div><b>当前</b>${activeCh||1} 间使用中 · 其余空闲</div>
+      </div></div></div>
+    <div class="zone-section"><h5>关联批次</h5><div class="zone-batch-list">
+      <div class="zone-batch-item"><span><b>QZ-2608-05</b> · 熏制后熟化</span><span>第 3 天</span></div>
+    </div></div>`;
+  }else return;
+  $('#zone-preview-title').textContent=title;
+  $('#zone-preview-content').innerHTML=`
+    <div class="zone-preview-hero">
+      <span class="zp-ico">${ic(icon,'ic-ico-xl')}</span>
+      <div class="zp-main"><div class="zp-title">${title}</div><div class="zp-sub">${sub}</div></div>
+      <div class="zp-stat"><div class="sk">${statKey}</div><div class="sv">${statVal}</div></div>
+    </div>${body}`;
+  $('#zone-preview-mask').classList.add('on');
+}
+function closeZonePreview(){ $('#zone-preview-mask').classList.remove('on'); }
+function closeZonePreviewMask(e){ if(e.target.id==='zone-preview-mask') closeZonePreview(); }
+function initFactory3D(){
+  const wrap=$('#factory-zones'); if(!wrap) return;
+  FACTORY.devices=loadDevices();
+  const dryAlarm=hasDryerAnomaly();
+  const b1=B.find(x=>x.id==='QZ-2608-01');
+  const zones=[
+    {id:'raw',x:20,y:27,dot:'run',label:'原材料库',sub:'库存 12.5 吨'},
+    {id:'pickle',x:30,y:48,dot:'run',label:'腌制车间',sub:'运行中'},
+    {id:'hang',x:52,y:46,dot:'stby',label:'晾挂车间',sub:`晾挂第 ${b1?.days||17} 天`},
+    {id:'dryroom',x:66,y:38,dot:dryAlarm?'alarm':'run',label:'烘房 ①',sub:dryAlarm?'湿度过低':'1台运行',alarm:dryAlarm},
+    {id:'dryroom2',x:66,y:56,dot:'idle',label:'烘房 ②',sub:'空闲可用'},
+    {id:'stock',x:76,y:24,dot:'run',label:'成品冷藏',sub:'容量 78%'},
+    {id:'aging',x:40,y:76,dot:'idle',label:'熟化间',sub:'20 间 · 静置熟化'},
+  ];
+  wrap.innerHTML=zones.map(z=>`
+    <button class="fz-label${z.alarm?' alarm':''}" style="left:${z.x}%;top:${z.y}%" data-z="${z.id}">
+      <i class="fz-dot ${z.dot}"></i>
+      <span class="fz-txt"><b>${z.label}</b><span>${z.sub}</span></span>
+      ${z.alarm?'<em class="fz-badge">!</em>':''}
+    </button>`).join('');
+  wrap.querySelectorAll('.fz-label').forEach(btn=>{
+    btn.type='button';
+    btn.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      openZonePreview(btn.dataset.z);
+    });
+  });
+  renderFactoryCards();
+  renderDevicePanel();
+}
+function bindFactoryResize(){
+  const el=$('#factory-canvas'); if(!el) return;
+  onFactoryResize();
+  if(factoryResizeObs) factoryResizeObs.disconnect();
+  if(typeof ResizeObserver!=='undefined'){
+    factoryResizeObs=new ResizeObserver(()=>{
+      cancelAnimationFrame(factoryResizeRaf);
+      factoryResizeRaf=requestAnimationFrame(onFactoryResize);
+    });
+    factoryResizeObs.observe(el);
+  }
+}
+function onFactoryResize(){
+  const el=$('#factory-canvas'); if(!el||!factoryRenderer||!factoryCamera) return;
+  const W=el.clientWidth,H=el.clientHeight;
+  if(W<10||H<10) return;
+  factoryCamera.aspect=W/H; factoryCamera.updateProjectionMatrix();
+  factoryRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  factoryRenderer.setSize(W,H,false);
+}
+function renderFactoryCards(){
+  const b3=B.find(x=>x.id==='QZ-2608-03');
+  const b1=B.find(x=>x.id==='QZ-2608-01');
+  const dryers=FACTORY.devices.filter(d=>d.cat==='dryer');
+  const hums=FACTORY.devices.filter(d=>d.cat==='humidifier');
+  const acs=FACTORY.devices.filter(d=>d.cat==='ac');
+  const dryRun=dryers.filter(d=>d.on).length;
+  const dryIdle=dryers.filter(d=>!d.on).length;
+  const availDry=dryers.find(d=>!d.on);
+  const humRun=hums.filter(d=>d.on).length;
+  const acRun=acs.filter(d=>d.on).length;
+  const acStby=acs.filter(d=>!d.on).length;
+  const acSet=acs.find(d=>d.on)?.run?.设定||'16℃';
+  const cards=[
+    {icon:'pickle',title:'腌制车间',sub:`${B.filter(x=>x.stage==='prep').length} 批在制`,st:`腌制中 ${B.filter(x=>x.stage==='prep').length} 批`,click:"openZonePreview('pickle')"},
+    {icon:'hang',title:'晾挂车间',sub:`${B.filter(x=>x.stage==='dry').length} 批在挂`,st:`晾挂第 ${b1?.days||17} 天起`,click:"openZonePreview('hang')"},
+    {icon:'dryer',title:'烘房',sub:`${dryRun}台运行 / ${dryIdle}台空闲`,st:`可用: ${availDry?.label||'烘房 2#'}`,click:"setDevFilter('dryer');scrollToDevicePanel()"},
+    {icon:'humidifier',title:'加湿器',sub:`${humRun}台运行`,st:hums.some(d=>d.anomaly)?'有异常':'无异常',click:"setDevFilter('humidifier');scrollToDevicePanel()"},
+    {icon:'ac',title:'空调',sub:`${acRun}台运行 / ${acStby}台待机`,st:`设定 ${acSet}`,click:"setDevFilter('ac');scrollToDevicePanel()"},
+    {icon:'stock',title:'成品库',sub:'库存 3,240 件',st:'可用容量 65%',click:"openZonePreview('stock')"},
+  ];
+  $('#factory-cards').innerHTML=cards.map(c=>`<div class="fc" onclick="${c.click}">
+    <div class="fc-ico">${ic(c.icon,'ic-ico-lg')}</div><b>${c.title}</b><div class="fc-sub">${c.sub}</div>
+    <div class="st">${c.st}</div><span class="fc-arr">›</span></div>`).join('');
+  $('#factory-cards').querySelectorAll('img').forEach(img=>{
+    if(img.complete) img.classList.add('loaded');
+    else img.onload=()=>img.classList.add('loaded');
+  });
+}
+function renderDevicePanel(){
+  const tabs=`<div class="dev-panel-tabs">
+    <button class="${factoryPanelTab==='devices'?'on':''}" onclick="setFactoryPanelTab('devices')">设备</button>
+    <button class="${factoryPanelTab==='warehouse'?'on':''}" onclick="setFactoryPanelTab('warehouse')">仓库导航</button>
+    <button class="${factoryPanelTab==='env'?'on':''}" onclick="setFactoryPanelTab('env')">环境总览</button>
+  </div>`;
+  if(factoryPanelTab==='warehouse'){
+    $('#device-panel').innerHTML=tabs+renderWarehousePanel();
+    return;
+  }
+  if(factoryPanelTab==='env'){
+    $('#device-panel').innerHTML=tabs+renderEnvPanel();
+    return;
+  }
+  const chips=DEV_FILTER_CATS.map(c=>
+    `<button class="dev-chip${factoryListFilter===c.key?' on':''}" onclick="setDevFilter('${c.key}')">${c.label} ${devFilterCount(c.key)}</button>`).join('');
+  const listSrc=factoryListFilter==='all'?FACTORY.devices:FACTORY.devices.filter(d=>devFilterCat(d)===factoryListFilter);
+  const list=listSrc.length?listSrc.map(d=>{
+    const cat=DEVICE_CATS[d.cat];
+    const sel=factorySelectedDev===d.id;
+    const st=getDevCardStatus(d);
+    const metrics=getDevMetrics(d);
+    return `<div class="dev-card${sel?' sel':''}" onclick="selectDevice('${d.id}')">
+      <div class="dev-card-top">
+        <span class="ico">${ic(cat.icon)}</span>
+        <div class="dev-card-main">
+          <div class="dev-card-name">${d.label}${st.badge?` <span class="badge ${st.badgeCls}">${st.badge}</span>`:''}</div>
+          <div class="dev-card-status${st.alarm?' alarm-txt':''}"><i class="sd ${st.dot}"></i>${st.text}</div>
+          <div class="dev-card-metrics">${metrics}</div>
+        </div>
+        <span class="dev-card-chev">›</span>
+      </div>
+    </div>`;
+  }).join(''):'<div class="dev-empty">暂无该分类设备</div>';
+  $('#device-panel').innerHTML=tabs+'<div class="dev-filters">'+chips+'</div><div class="dev-list">'+list+'</div>';
+}
+/* ---------- ledger ---------- */
+const LEDGER_DEFAULT=[
+  {date:'8/28',type:'采购',batch:'QZ-2608-04',sup:'演示供应商 A',amount:5100,invoice:'DEMO-INVOICE',buyer:'石红英',registrar:'石红英'},
+  {date:'8/27',type:'采购',batch:'QZ-2608-09',sup:'演示供应商 B',amount:5040,invoice:'DEMO-INVOICE',buyer:'李师傅',registrar:'石红英'},
+  {date:'8/22',type:'采购',batch:'QZ-2608-07',sup:'演示供应商 B',amount:4680,invoice:'DEMO-INVOICE',buyer:'石红英',registrar:'石红英'},
+  {date:'8/02',type:'采购',batch:'QZ-2608-01',sup:'演示供应商 B',amount:5760,invoice:'DEMO-INVOICE',buyer:'石红英',registrar:'石红英'},
+];
+let LEDGER;
+try{
+  const _sl=localStorage.getItem('sx_ledger');
+  LEDGER=_sl?JSON.parse(_sl):LEDGER_DEFAULT.slice();
+  if(!Array.isArray(LEDGER)) LEDGER=LEDGER_DEFAULT.slice();
+}catch{ LEDGER=LEDGER_DEFAULT.slice(); }
+function saveLedger(){ try{ localStorage.setItem('sx_ledger',JSON.stringify(LEDGER)); }catch(e){} }
+const LEDGER_TABS={
+  purchase:[
+    {id:'suppliers',label:'供应商管理',title:'供应商管理台账'},
+    {id:'purchase',label:'采购明细',title:'原材料采购明细台账'},
+  ],
+  env:[{id:'envlog',label:'温湿度监控',title:'温湿度监控台账'}],
+  storage:[
+    {id:'rawin',label:'原料入库',title:'原材料入库台账'},
+    {id:'fgstock',label:'成品库',title:'成品库管理台账'},
+    {id:'shipout',label:'销售出库',title:'销售出库台账'},
+    {id:'inventory',label:'库存盘点',title:'库存盘点台账'},
+  ],
+};
+let ledgerGroup='purchase',ledgerTab='suppliers';
+const LEDGER_DEMO={
+  suppliers:[
+    {name:'演示供应商 B',contact:'王经理 138****8821',cert:'2027-03-15',cats:'土猪后腿、五花',status:'合作中'},
+    {name:'演示供应商 A',contact:'李建国 139****6612',cert:'2026-11-20',cats:'散养土猪、排骨',status:'合作中'},
+    {name:'清镇农贸',contact:'张姐 135****3308',cert:'2026-08-01',cats:'香辛料、食盐',status:'暂停'},
+  ],
+  purchase:[
+    {date:'8/28',sup:'演示供应商 A',item:'土猪后腿',spec:'一级',qty:300,unit:17,total:5100,batch:'QZ-2608-04',quarantine:'DEMO-QC',inspector:'徐巧益'},
+    {date:'8/27',sup:'演示供应商 B',item:'土猪后腿',spec:'一级',qty:280,unit:18,total:5040,batch:'QZ-2608-09',quarantine:'待检',inspector:'—'},
+    {date:'8/22',sup:'演示供应商 B',item:'土猪后腿',spec:'一级',qty:260,unit:18,total:4680,batch:'QZ-2608-07',quarantine:'DEMO-QC',inspector:'徐巧益'},
+    {date:'8/02',sup:'演示供应商 B',item:'土猪后腿',spec:'一级',qty:320,unit:18,total:5760,batch:'QZ-2608-01',quarantine:'DEMO-QC',inspector:'石武举'},
+  ],
+  envlog:(()=>{
+    const rows=[];
+    const recent=R.filter(r=>r.t).slice(-12).reverse();
+    recent.forEach(r=>{
+      const bad=r.mh<42||(r.auto-r.mh)>12;
+      rows.push({date:`8/${r.d.slice(3)}`,time:r.t,zone:'晾挂车间',temp:r.mt,hum:r.mh,by:r.by||'自动',note:bad?'湿度偏低 · 已补水':'正常'});
+    });
+    rows.push({date:'8/29',time:'14:20',zone:'腌制车间',temp:'13.2',hum:'56',by:'自动',note:'正常'});
+    rows.push({date:'8/29',time:'14:20',zone:'烘房 ①',temp:'42.3',hum:'28',by:'自动',note:'湿度过低 · 待处理'});
+    return rows;
+  })(),
+  rawin:[
+    {date:'8/25',item:'土猪后腿',spec:'一级',batch:'QZ-2608-07',qty:'260 斤',loc:'原料库 A-03',result:'合格',by:'石红英'},
+    {date:'8/04',item:'土猪后腿',spec:'一级',batch:'QZ-2608-01',qty:'320 斤',loc:'原料库 A-01',result:'合格',by:'石武举'},
+    {date:'7/20',item:'土猪五花',spec:'二级',batch:'QZ-2608-06',qty:'200 斤',loc:'原料库 B-02',result:'合格',by:'徐巧益'},
+  ],
+  fgstock:[
+    {date:'7/09',batch:'QZ-2607-04',item:'柴火腊肉',spec:'500g/袋',inQty:300,outQty:118,bal:182,mfg:'6/28',exp:'12个月',loc:'成品冷藏①',owner:'石红英'},
+    {date:'6/28',batch:'QZ-2606-02',item:'柴火腊肉',spec:'500g/袋',inQty:180,outQty:180,bal:0,mfg:'6/05',exp:'12个月',loc:'成品冷藏②',owner:'李师傅'},
+  ],
+  shipout:[
+    {date:'7/30',client:'清镇集市',item:'柴火腊肉',spec:'500g/袋',qty:141,batch:'QZ-2607-03',amount:8460,by:'石红英'},
+    {date:'7/24',client:'贵阳商超',item:'柴火腊肉',spec:'500g/袋',qty:207,batch:'QZ-2607-02',amount:12420,by:'石红英'},
+    {date:'7/16',client:'电商平台',item:'柴火腊肉',spec:'500g/袋',qty:176,batch:'QZ-2607-01',amount:10560,by:'李师傅'},
+  ],
+  inventory:[
+    {date:'8/25',cat:'土猪后腿',spec:'一级',book:520,actual:518,diff:-2,reason:'称重误差',by:'徐巧益'},
+    {date:'8/25',cat:'柴火腊肉',spec:'500g/袋',book:182,actual:182,diff:0,reason:'—',by:'石红英'},
+    {date:'7/31',cat:'香辛料',spec:'混合装',book:45,actual:44,diff:-1,reason:'自然损耗',by:'李师傅'},
+  ],
+};
+const LEDGER_COLS={
+  suppliers:['供应商名称','联系人','资质有效期','供应品类','合作状态'],
+  purchase:['采购日期','供应商','品名','规格','数量(斤)','单价','总金额','批次号','检疫证明号','验收人'],
+  envlog:['记录日期','时间','监控区域','温度℃','湿度%','记录人','异常及处理'],
+  rawin:['入库日期','品名','规格','批次','数量','库位','验收结果','经办人'],
+  fgstock:['入库日期','产品批次','品名','规格','入库量','出库量','库存结余','生产日期','保质期','库位','责任人'],
+  shipout:['出库日期','客户','品名','规格','数量','批次','金额','经办人'],
+  inventory:['盘点日期','品类','规格','账面数','实盘数','盈亏数','盈亏原因','盘点人'],
+};
+function setLedgerGroup(g){
+  ledgerGroup=g;
+  ledgerTab=LEDGER_TABS[g][0].id;
+  $$('#ledger-grp button').forEach(b=>b.classList.toggle('on',b.dataset.g===g));
+  renderLedger();
+}
+function setLedgerTab(t){ ledgerTab=t; renderLedger(); }
+function ledgerRows(tab){
+  const data=LEDGER_DEMO[tab]||[];
+  if(tab==='suppliers') return data.map(r=>[r.name,r.contact,r.cert,r.cats,r.status]);
+  if(tab==='purchase') return data.map(r=>[r.date,r.sup,r.item,r.spec,r.qty,r.unit,r.total,r.batch,r.quarantine,r.inspector]);
+  if(tab==='envlog') return data.map(r=>[r.date,r.time,r.zone,r.temp,r.hum,r.by,r.note]);
+  if(tab==='rawin') return data.map(r=>[r.date,r.item,r.spec,r.batch,r.qty,r.loc,r.result,r.by]);
+  if(tab==='fgstock') return data.map(r=>[r.date,r.batch,r.item,r.spec,r.inQty,r.outQty,r.bal,r.mfg,r.exp,r.loc,r.owner]);
+  if(tab==='shipout') return data.map(r=>[r.date,r.client,r.item,r.spec,r.qty,r.batch,r.amount,r.by]);
+  if(tab==='inventory') return data.map(r=>[r.date,r.cat,r.spec,r.book,r.actual,r.diff,r.reason,r.by]);
+  return [];
+}
+function renderLedger(){
+  const tabs=LEDGER_TABS[ledgerGroup]||[];
+  const cur=tabs.find(t=>t.id===ledgerTab)||tabs[0];
+  if(!cur) return;
+  ledgerTab=cur.id;
+  const subEl=$('#ledger-sub-tabs');
+  if(subEl) subEl.innerHTML=tabs.map(t=>
+    `<button type="button" class="${t.id===ledgerTab?'on':''}" onclick="setLedgerTab('${t.id}')">${t.label}</button>`).join('');
+  const cols=LEDGER_COLS[ledgerTab];
+  const rows=ledgerRows(ledgerTab);
+  const title=$('#ledger-title'), meta=$('#ledger-meta'), body=$('#ledger-body');
+  if(title) title.textContent=cur.title;
+  if(meta) meta.textContent=`${rows.length} 条记录`;
+  if(!body) return;
+  if(!rows.length){
+    body.innerHTML='<div style="padding:32px;text-align:center;color:var(--text-faint)">暂无记录</div>';
+    return;
+  }
+  body.innerHTML=`<table class="ledger-table"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+function exportLedgerCsv(){
+  const cols=LEDGER_COLS[ledgerTab];
+  const rows=ledgerRows(ledgerTab);
+  const cur=(LEDGER_TABS[ledgerGroup]||[]).find(t=>t.id===ledgerTab);
+  const csv=[cols,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`山熏台账_${cur?.label||ledgerTab}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('已导出 CSV',`${cur?.title||''} · ${rows.length} 条`);
+}
+$$('#ledger-grp button').forEach(b=>b.onclick=()=>setLedgerGroup(b.dataset.g));
+</script>
+<script src="js/app/boot.js"></script>
+<script>boot();</script></body></html>

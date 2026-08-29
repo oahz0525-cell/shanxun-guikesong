@@ -1,0 +1,16 @@
+[
+  {"id":"QZ-2608-08","real":0,"stage":"buy","buySub":"pending","st":"待采购","sup":"—","inKg":0,"inD":"—","pr":17,"days":0,"ab":0,"out":null,"outKg":null,"ch":null},
+  {"id":"QZ-2608-04","real":0,"stage":"buy","buySub":"buying","st":"采购中","sup":"演示供应商 A","inKg":300,"inD":"8/28","pr":17,"days":0,"ab":0,"out":null,"outKg":null,"ch":null,"purchase":{"buyer":"石红英","orderDate":"8/27","note":"后腿肉 300 斤"}},
+  {"id":"QZ-2608-09","real":0,"stage":"buy","buySub":"inspecting","st":"验收中","sup":"演示供应商 B","inKg":280,"inD":"8/29","pr":18,"days":0,"ab":0,"out":null,"outKg":null,"ch":null,"purchase":{"buyer":"李师傅","orderDate":"8/26","arriveDate":"8/29","quarantine":"待检","reportNo":"—"}},
+  {"id":"QZ-2608-07","real":0,"stage":"rawstock","buySub":"passed","st":"验收完成","sup":"演示供应商 B","inKg":260,"inD":"8/25","pr":18,"days":0,"ab":0,"out":null,"outKg":null,"ch":null,"purchase":{"buyer":"石红英","orderDate":"8/22","arriveDate":"8/25","quarantine":"合格","reportNo":"DEMO-QC","inspector":"徐巧益"}},
+  {"id":"QZ-2608-03","real":0,"stage":"prep","st":"腌制中","sup":"演示供应商 B","inKg":260,"inD":"8/26","pr":18,"days":3,"ab":0,"out":null,"outKg":null,"ch":null},
+  {"id":"QZ-2608-01","real":1,"stage":"dry","st":"晾挂中","sup":"演示供应商 B","inKg":320,"inD":"8/04","pr":18,"days":17,"ab":0,"dryReady":1,"out":null,"outKg":null,"ch":null,"purchase":{"buyer":"石红英","orderDate":"8/02","arriveDate":"8/04","quarantine":"合格","reportNo":"DEMO-QC","inspector":"石武举"}},
+  {"id":"QZ-2608-02","real":0,"stage":"dry","st":"晾挂中","sup":"演示供应商 B","inKg":280,"inD":"8/18","pr":18,"days":6,"ab":0,"sensor":0,"dryReady":0,"out":null,"outKg":null,"ch":null},
+  {"id":"QZ-2608-05","real":0,"stage":"smoke","st":"熏制中","sup":"演示供应商 B","inKg":240,"inD":"8/10","pr":18,"days":3,"ab":0,"out":null,"outKg":null,"ch":null},
+  {"id":"QZ-2608-06","real":0,"stage":"qc","st":"检验中","sup":"演示供应商 A","inKg":200,"inD":"7/20","pr":16,"days":22,"ab":0,"out":null,"outKg":null,"ch":null},
+  {"id":"QZ-2607-04","real":0,"stage":"stock","st":"成品在库","sup":"演示供应商 A","inKg":300,"inD":"7/09","pr":16,"days":26,"ab":0,"out":null,"outKg":182,"ch":null,"traceToken":"SXQZ260704","stockRoom":"成品冷藏①","stockedAt":"7/09"},
+  {"id":"QZ-2607-03","real":0,"stage":"ship","st":"已完成","sup":"演示供应商 A","inKg":260,"inD":"7/02","pr":16,"days":25,"ab":3,"out":"7/30","outKg":141,"ch":"集市","traceToken":"SXQZ260703","stockRoom":"成品冷藏①","stockedAt":"7/18"},
+  {"id":"QZ-2607-02","real":0,"stage":"ship","st":"已完成","sup":"演示供应商 B","inKg":340,"inD":"6/26","pr":18,"days":27,"ab":0,"out":"7/24","outKg":207,"ch":"商超","traceToken":"SXQZ260702","stockRoom":"成品冷藏②","stockedAt":"7/20"},
+  {"id":"QZ-2607-01","real":0,"stage":"ship","st":"已完成","sup":"演示供应商 A","inKg":300,"inD":"6/19","pr":16,"days":26,"ab":1,"out":"7/16","outKg":176,"ch":"电商","traceToken":"SXQZ260701","stockRoom":"成品冷藏①","stockedAt":"7/09"},
+  {"id":"QZ-2606-02","real":0,"stage":"ship","st":"已完成","sup":"演示供应商 B","inKg":180,"inD":"6/05","pr":18,"days":25,"ab":0,"out":"7/02","outKg":110,"ch":"熟人","traceToken":"SXQZ260602","stockRoom":"成品冷藏②","stockedAt":"6/28"}
+]
